@@ -55,7 +55,7 @@ except:
 
 #TODO: implement variable deltas for different directions (might speed up things, see review)
 
-def optimize(func, x0, args=(), scaling=None, deltainit=1.0, deltatol=0.1, feps=1e-15,
+def minimize(func, x0, args=(), scaling=None, deltainit=1.0, deltatol=0.1, feps=1e-15,
             bounds=None, redfactor=2.0,
             errorcontrol=False, funcmultfactor=2.0, paired=False, alpha=0.05,
             disp=False, **kwargs):
