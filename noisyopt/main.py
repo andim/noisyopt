@@ -62,19 +62,27 @@ def minimize(func, x0, args=(), scaling=None, deltainit=1.0, deltatol=0.1, feps=
     """
     Minimization of a function using a compass rule.
 
-    scaling: scaling by which to multiply step size and tolerances along different dimensions
-    deltainit: inital pattern size
-    deltatol: smallest pattern size
-    redfactor: reduction factor by which to reduce delta if no reduction direction found 
-    bounds: bounds on the variables
-    errorcontrol: whether to control error of simulation 
-
-    only in errorcontrol mode
-    -------------------------
-    funcmultfactor: multiplication factor by which to increase number of iterations of function
-    paired: compare for same random seeds
-    alpha: signficance level of tests
-           (note: no correction for multiple testing thus interpret with care)
+    Parameters
+    ----------
+    scaling:
+        scaling by which to multiply step size and tolerances along different dimensions
+    deltainit:
+        inital pattern size
+    deltatol:
+        smallest pattern size
+    redfactor:
+        reduction factor by which to reduce delta if no reduction direction found 
+    bounds:
+        bounds on the variables
+    errorcontrol:
+        whether to control error of simulation 
+    funcmultfactor: only for errorcontol=True
+        multiplication factor by which to increase number of iterations of function
+    paired: only for errorcontol=True
+        compare for same random seeds
+    alpha: only for errorcontol=True
+        signficance level of tests
+        (note: no correction for multiple testing thus interpret with care)
 
     Returns
     -------
@@ -380,8 +388,22 @@ class DifferenceFunction(AverageBase):
 def bisect(func, a, b, args=(), xtol=1e-6, errorcontrol=False, alpha=0.05, disp=False):
     """Find root by bysection search.
 
-    If errorcontrol is true then assume that function is instance of DifferenceFunction  
-    alpha: signficance level to be used for testing (only in errorcontrolmode)
+    Parameters
+    ----------
+    a, b:
+        initial interval
+    args:
+        extra args to be supplied to function
+    xtol:
+        target tolerance for intervall size
+    errorcontrol:
+        if true, assume that function is instance of DifferenceFunction  
+    alpha: (only for errorcontrol=True)
+        significance level to be used for testing 
+
+    Returns
+    -------
+    root of function
     """
     width = b-a 
     # check whether function is ascending or not
