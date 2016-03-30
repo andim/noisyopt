@@ -55,40 +55,53 @@ except:
 
 #TODO: implement variable deltas for different directions (might speed up things, see review)
 
-def minimize(func, x0, args=(), scaling=None, deltainit=1.0, deltatol=0.1, feps=1e-15,
-            bounds=None, redfactor=2.0,
+def minimize(func, x0, args=(),
+            bounds=None, scaling=None,
+            redfactor=2.0, deltainit=1.0, deltatol=0.1, feps=1e-15,
             errorcontrol=False, funcmultfactor=2.0, paired=False, alpha=0.05,
             disp=False, **kwargs):
     """
-    Minimization of a function using a compass rule.
+    Minimization of an objective function by a pattern search.
+
+    The search algorithm is a simple compass search along coordinate directions.
+    If the function evaluation contains a stochastic element, then the function
+    is called repeatedly to average over the stochasticity in the function
+    evaluation. The number of evaluations is adapted dynamically to ensure
+    convergence.
 
     Parameters
     ----------
-    scaling:
-        scaling by which to multiply step size and tolerances along different dimensions
-    deltainit:
-        inital pattern size
-    deltatol:
-        smallest pattern size
-    redfactor:
-        reduction factor by which to reduce delta if no reduction direction found 
-    bounds:
+    func: callable
+        objective function to be minimized
+    x0: array-like
+        starting point
+    args: tuple
+        extra arguments to be supplied to func
+    bounds: array-like
         bounds on the variables
-    errorcontrol:
+    scaling: array-like
+        scaling by which to multiply step size and tolerances along different dimensions
+    redfactor: float
+        reduction factor by which to reduce delta if no reduction direction found 
+    deltainit: float
+        inital pattern size
+    deltatol: float
+        smallest pattern size
+    errorcontrol: boolean
         whether to control error of simulation 
-    funcmultfactor: only for errorcontol=True
+    funcmultfactor: float, only for errorcontol=True
         multiplication factor by which to increase number of iterations of function
-    paired: only for errorcontol=True
+    paired: boolean, only for errorcontol=True
         compare for same random seeds
-    alpha: only for errorcontol=True
+    alpha: float, only for errorcontol=True
         signficance level of tests
         (note: no correction for multiple testing thus interpret with care)
 
     Returns
     -------
     scipy.optimize.OptimizeResult object
-    special entry: free
-                   Boolean array indicating whether the variable is free (within feps) at the optimum
+        special entry: free
+        Boolean array indicating whether the variable is free (within feps) at the optimum
     """
     # absolute tolerance for float comparisons
     floatcompatol = 1e-14
@@ -102,7 +115,7 @@ def minimize(func, x0, args=(), scaling=None, deltainit=1.0, deltatol=0.1, feps=
     else:
         scaling = np.asarray(scaling)
     if disp:
-        print 'compass optimization starting'
+        print 'minimization starting'
         print 'args', args
         print 'errorcontrol', errorcontrol
         print 'paired', paired
@@ -385,25 +398,33 @@ class DifferenceFunction(AverageBase):
         kwargs['type_'] = 'smaller'
         return self.test(x, **kwargs)
 
-def bisect(func, a, b, args=(), xtol=1e-6, errorcontrol=False, alpha=0.05, disp=False):
+def bisect(func, a, b, args=(), xtol=1e-6, errorcontrol=False, alpha=0.05,
+           disp=False):
     """Find root by bysection search.
+
+    If the function evaluation is noisy then use `errorcontrol=True` for adaptive
+    sampling of the function during the bisection search.
 
     Parameters
     ----------
-    a, b:
+    func: callable
+        Function of which the root should be found. If `errorcontrol=True`
+        then the function should be derived from `AverageBase`.
+
+    a, b: float
         initial interval
-    args:
+    args: tuple
         extra args to be supplied to function
-    xtol:
+    xtol: float
         target tolerance for intervall size
-    errorcontrol:
+    errorcontrol: boolean
         if true, assume that function is instance of DifferenceFunction  
-    alpha: (only for errorcontrol=True)
+    alpha: float, only for `errorcontrol=True`
         significance level to be used for testing 
 
     Returns
     -------
-    root of function
+    float, root of function
     """
     width = b-a 
     # check whether function is ascending or not
@@ -495,14 +516,14 @@ class memoized(object):
 if __name__ == "__main__":
     def quadratic(x):
         return (x**2).sum()
-    print compass(quadratic, np.asarray([0.5, 1.0]))
-    print compass(quadratic, np.asarray([2.5, -3.2]))
-    print compass(quadratic, np.asarray([2.5, -3.2, 0.9, 10.0, -0.3]))
-    print compass(quadratic, np.asarray([0.5, 0.5]), bounds=np.asarray([[0, 1], [0, 1]]))
-    print compass(quadratic, np.asarray([0.8, 0.8]), bounds=np.asarray([[0.5, 1], [0.5, 1]]), deltatol=0.01)
+    print minimize(quadratic, np.asarray([0.5, 1.0]))
+    print minimize(quadratic, np.asarray([2.5, -3.2]))
+    print minimize(quadratic, np.asarray([2.5, -3.2, 0.9, 10.0, -0.3]))
+    print minimize(quadratic, np.asarray([0.5, 0.5]), bounds=np.asarray([[0, 1], [0, 1]]))
+    print minimize(quadratic, np.asarray([0.8, 0.8]), bounds=np.asarray([[0.5, 1], [0.5, 1]]), deltatol=0.01)
 
     import scipy.optimize
-    print compass(scipy.optimize.rosen, np.asarray([-3.0, -4.0]), deltatol=0.00001)
+    print minimize(scipy.optimize.rosen, np.asarray([-3.0, -4.0]), deltatol=0.00001)
 
 #    import evolimmun
 #    lambda_ = 3
@@ -516,7 +537,7 @@ if __name__ == "__main__":
 #    k = lambda x: 0.1*x+x**2
 #    bounds = np.array([[0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0]])
 #    args = (lambda_, mu, aenv, pienv, Delta, niter, nburnin, g, k)
-#    print compass(evolimmun.minus(evolimmun.Lambda_pq), [0.1, 0.0, 1.0, 0.0],
+#    print minimize(evolimmun.minus(evolimmun.Lambda_pq), [0.1, 0.0, 1.0, 0.0],
 #                   scaling=(1.0, 1.0, 5.0, 1.0),
 #                   args=args, bounds=bounds,
 #                   deltainit=0.1,
@@ -527,7 +548,7 @@ if __name__ == "__main__":
 
     def matya(x):
         return 0.26*(x[0]**2 + x[1]**2)-0.48*x[0]*x[1]
-    print compass(matya, np.asarray([2.0, 3.5]), deltatol=0.01)
+    print minimize(matya, np.asarray([2.0, 3.5]), deltatol=0.01)
 
     def stochastic_quadratic(x, seed=None):
         prng = np.random if seed is None else np.random.RandomState(seed)
@@ -537,5 +558,5 @@ if __name__ == "__main__":
     print diff(np.array([1.0, 2.0]))
     print diff.test(np.array([1.0, 2.0]), (), type_ = 'equality')
 
-    print compass(stochastic_quadratic, np.array([4.55, 3.0]), deltainit=2.5, deltatol=0.4, errorcontrol=True)
-    print 'paired', compass(stochastic_quadratic, np.array([4.55, 3.0]), deltainit=2.5, deltatol=0.4, errorcontrol=True, paired=True)
+    print minimize(stochastic_quadratic, np.array([4.55, 3.0]), deltainit=2.5, deltatol=0.4, errorcontrol=True)
+    print 'paired', minimize(stochastic_quadratic, np.array([4.55, 3.0]), deltainit=2.5, deltatol=0.4, errorcontrol=True, paired=True)
