@@ -275,3 +275,13 @@ texinfo_domain_indices = False
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
 
+# autogenerate api documentation (see https://github.com/rtfd/readthedocs.org/issues/1139)
+import subprocess
+def generateapidoc(_):
+    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    output_path = os.path.join(cur_dir, 'reference')
+    module = 'noisyopt'
+    subprocess.check_call(['python', 'tools/build_modref_templates.py', module, output_path])
+
+def setup(app):
+    app.connect('builder-inited', generateapidoc)
