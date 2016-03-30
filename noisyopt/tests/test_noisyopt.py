@@ -61,3 +61,18 @@ def test_minimize():
                             errorcontrol=True, paired=True)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
+
+def test_bisect():
+
+    xtol = 1e-6 
+    significant = 6
+    ## simple tests
+    root = noisyopt.bisect(lambda x: x, -2, 2, xtol=xtol)
+    npt.assert_approx_equal(root, 0.0, significant=significant)
+
+    root = noisyopt.bisect(lambda x: x-1, -2, 2, xtol=xtol)
+    npt.assert_approx_equal(root, 1.0, significant=significant)
+
+    ## extrapolate if 0 outside of interval
+    root = noisyopt.bisect(lambda x: x, 1, 2, xtol=xtol)
+    npt.assert_approx_equal(root, 0.0, significant=significant)
