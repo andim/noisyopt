@@ -7,6 +7,7 @@ from __future__ import print_function, division
 import sys
 import re
 from os.path import join as pjoin
+import os.path
 
 # local imports
 from apigen import ApiDocWriter
@@ -38,7 +39,8 @@ def writeapi(package, outdir, other_defines=True):
 
     installed_version = V(module.__version__)
 
-    ver_file = pjoin('..', package, 'version.py')
+    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    ver_file = pjoin(cur_dir, '..', '..', package, 'version.py')
     with open(ver_file) as f:
         exec(f.read())
     source_version = __version__
@@ -50,8 +52,7 @@ def writeapi(package, outdir, other_defines=True):
     docwriter = ApiDocWriter(package, rst_extension='.rst',
                              other_defines=other_defines)
                              
-    docwriter.package_skip_patterns += [r'\.shablona$',
-                                        r'.*test.*$',
+    docwriter.package_skip_patterns += [r'.*test.*$',
                                         r'\.version.*$']
     docwriter.write_api_docs(outdir)
     docwriter.write_index(outdir, 'index', relative_to=outdir)
