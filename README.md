@@ -3,6 +3,14 @@ Pattern search optimization dealing intelligently with noisy function evaluation
 
 ## Installation
 
-Run the following:
+To install run the following in the main directory:
 
    python setup.py install
+
+The package depends on the numpy and scipy packages.
+
+## Testing
+
+You can run the modules testsuite using the nose testing framework:
+    
+    nosetests
