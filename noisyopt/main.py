@@ -57,7 +57,7 @@ except:
 
 def minimize(func, x0, args=(),
             bounds=None, scaling=None,
-            redfactor=2.0, deltainit=1.0, deltatol=0.1, feps=1e-15,
+            redfactor=2.0, deltainit=1.0, deltatol=1e-3, feps=1e-15,
             errorcontrol=False, funcmultfactor=2.0, paired=False, alpha=0.05,
             disp=False, **kwargs):
     """
@@ -514,37 +514,8 @@ class memoized(object):
             return self.func(*args, **kwargs)
 
 if __name__ == "__main__":
-    def quadratic(x):
-        return (x**2).sum()
-    print minimize(quadratic, np.asarray([0.5, 1.0]))
-    print minimize(quadratic, np.asarray([2.5, -3.2]))
-    print minimize(quadratic, np.asarray([2.5, -3.2, 0.9, 10.0, -0.3]))
-    print minimize(quadratic, np.asarray([0.5, 0.5]), bounds=np.asarray([[0, 1], [0, 1]]))
-    print minimize(quadratic, np.asarray([0.8, 0.8]), bounds=np.asarray([[0.5, 1], [0.5, 1]]), deltatol=0.01)
-
     import scipy.optimize
     print minimize(scipy.optimize.rosen, np.asarray([-3.0, -4.0]), deltatol=0.00001)
-
-#    import evolimmun
-#    lambda_ = 3
-#    mu = 1
-#    aenv = 0.1
-#    pienv = 0.1
-#    Delta = 0.8
-#    niter = 1e5
-#    nburnin = 1e3
-#    g = lambda x: 2*x/(1+x)
-#    k = lambda x: 0.1*x+x**2
-#    bounds = np.array([[0.0, 1.0], [0.0, 1.0], [0.0, 1.0], [0.0, 1.0]])
-#    args = (lambda_, mu, aenv, pienv, Delta, niter, nburnin, g, k)
-#    print minimize(evolimmun.minus(evolimmun.Lambda_pq), [0.1, 0.0, 1.0, 0.0],
-#                   scaling=(1.0, 1.0, 5.0, 1.0),
-#                   args=args, bounds=bounds,
-#                   deltainit=0.1,
-#                   deltatol=0.01,
-#                   errorcontrol=True,
-#                   paired=True,
-#                   disp=False)
 
     def matya(x):
         return 0.26*(x[0]**2 + x[1]**2)-0.48*x[0]*x[1]
@@ -557,6 +528,3 @@ if __name__ == "__main__":
     diff = DifferenceFunction(stochastic_quadratic, stochastic_quadratic)
     print diff(np.array([1.0, 2.0]))
     print diff.test(np.array([1.0, 2.0]), (), type_ = 'equality')
-
-    print minimize(stochastic_quadratic, np.array([4.55, 3.0]), deltainit=2.5, deltatol=0.4, errorcontrol=True)
-    print 'paired', minimize(stochastic_quadratic, np.array([4.55, 3.0]), deltainit=2.5, deltatol=0.4, errorcontrol=True, paired=True)
