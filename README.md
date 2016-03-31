@@ -11,6 +11,6 @@ The package depends on the numpy and scipy packages.
 
 ## Testing
 
-You can run the modules testsuite using the nose testing framework:
+You can run the modules testsuite using the py.test testing framework:
     
-    nosetests
+    py.test
