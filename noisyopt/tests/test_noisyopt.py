@@ -76,3 +76,37 @@ def test_bisect():
     ## extrapolate if 0 outside of interval
     root = noisyopt.bisect(lambda x: x, 1, 2, xtol=xtol)
     npt.assert_approx_equal(root, 0.0, significant=significant)
+
+def test_AveragedFunction():
+    ## averaging a simple function 
+    func = lambda x: np.asarray(x).sum()
+    avfunc = noisyopt.AveragedFunction(func, N=30)
+    av, avse = avfunc([1.0, 1.0])
+    npt.assert_equal(av, 2.0)
+    npt.assert_equal(avse, 0.0) 
+
+    # se of function value difference between two points is zero
+    # (as function evaluation is not stochastic)
+    diffse = avfunc.diffse([1.0, 1.0], [2.0, 1.0])
+    npt.assert_equal(diffse, 0.0)
+
+    ## changing the number of evaluations
+    avfunc.N *= 2
+    npt.assert_equal(avfunc.N, 60)
+
+    ## averaging a stochastic function
+    func = lambda x: np.asarray(x).sum() + np.random.randn()
+    avfunc = noisyopt.AveragedFunction(func, N=30)
+    # check that reevaluation gives the same thing due to caching
+    av30_1, avse30_1 = avfunc([1.0, 1.0])
+    av30_2, avse30_2 = avfunc([1.0, 1.0])
+    npt.assert_equal(av30_1, av30_2)
+    npt.assert_equal(avse30_1, avse30_2)
+    # check that se decreases if 
+    avfunc.N *= 2
+    av60, avse60 = avfunc([1.0, 1.0])
+    assert av30_1 != av60
+    assert avse30_1 > avse60
+
+if __name__ == '__main__':
+    npt.run_module_suite()
