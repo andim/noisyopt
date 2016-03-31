@@ -9,7 +9,7 @@ Welcome to noisyopt's documentation!
 
     \min_{ l_i < x_i < u_i} f(\boldsymbol x),
 
-where the evaluations do not yield the precise function value, but the value plus some noise.
+where evaluations of the function f do not yield the precise function value, but the value plus some noise.
 The package implements a pattern search algorithm with an adaptive number of function
 evaluations to handle the stochasticity in function evaluations.
 

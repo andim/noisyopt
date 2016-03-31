@@ -2,7 +2,9 @@ Tutorial - Minimize a noisy function
 ====================================
 
 The following tutorial shows how to find a local minimum of a
-simple noisy function using the `noisyopt` library:
+simple function using the `noisyopt` library.
+
+The problem is to solve the following optimization problem
 
 .. math::
 
@@ -10,7 +12,14 @@ simple noisy function using the `noisyopt` library:
 
     f(x_1, x_2) = x_1^2 + x_2^2
 
-    \Omega = [-3.0, 3.0] \times [0.5, 5.0].
+    \Omega = [-3.0, 3.0] \times [0.5, 5.0],
+
+where we do not have access to the function f directly, but only
+to some noisy approximation
+
+.. math::
+
+    \tilde f = f + \xi, \quad \xi \sim \mathcal{N}(0, 0.1^2).
     
 First we need to import the ``minimize`` function from the `noisyopt` package::
 
