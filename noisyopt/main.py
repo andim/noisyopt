@@ -94,8 +94,9 @@ def minimize(func, x0, args=(),
     paired: boolean, only for errorcontol=True
         compare for same random seeds
     alpha: float, only for errorcontol=True
-        signficance level of tests
-        (note: no correction for multiple testing thus interpret with care)
+        significance level of tests, the higher this value the more statistics
+        is acquired, which decreases the risk of taking a step in a non-descent
+        direction at the expense of higher computational cost per iteration
 
     Returns
     -------
@@ -121,6 +122,7 @@ def minimize(func, x0, args=(),
         print 'paired', paired
     # ensure initial point lies within bounds
     if bounds is not None:
+        bounds = np.asarray(bounds)
         np.clip(x0, bounds[:, 0], bounds[:, 1], out=x0)
 
     def clip(x, d):
@@ -144,6 +146,10 @@ def minimize(func, x0, args=(),
         return arr
     N = len(x0)
     generatingset = [unit(i, N)*direction*scaling[i] for i in np.arange(N) for direction in [+1, -1]]
+
+    # apply Bonferroni correction to confidence level
+    # (need more statistics in higher dimensions)
+    alpha = alpha/len(generatingset)
 
     x = x0 
     f = func(x0, *args)
@@ -215,7 +221,7 @@ def minimize(func, x0, args=(),
             # optimization not finished if x updated during last iteration
             finished = False
 
-    message = 'Succesful termination'
+    message = 'convergence within deltatol'
     # check if any of the directions are free at the optimum
     delta = deltatol
     free = np.zeros(x.shape, dtype=bool)
@@ -230,7 +236,8 @@ def minimize(func, x0, args=(),
             free[dim] = True
             message += '. dim %i is free at optimum' % dim
                 
-    reskwargs = dict(x=x, nit=nit, nfev=func.nev, message=message, free=free)
+    reskwargs = dict(x=x, nit=nit, nfev=func.nev, message=message, free=free,
+                     success=True)
     if errorcontrol:
         res = OptimizeResult(fun=f[0], funse=f[1], **reskwargs)
     else:
@@ -440,7 +447,8 @@ def bisect(func, a, b, args=(), xtol=1e-6, errorcontrol=False, alpha=0.05,
     elif fb and not fa:
         ascending =  False
     else:
-        print 'Warning: func(a) and func(b) do not have opposing signs -> no search done'
+        if disp:
+            print 'Warning: func(a) and func(b) do not have opposing signs -> no search done'
         width = 0.0
 
     while width > xtol:
