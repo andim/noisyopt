@@ -87,6 +87,8 @@ def minimize(func, x0, args=(),
         inital pattern size
     deltatol: float
         smallest pattern size
+    feps: float
+       smallest difference in function value to resolve 
     errorcontrol: boolean
         whether to control error of simulation 
     funcmultfactor: float, only for errorcontol=True
@@ -104,30 +106,24 @@ def minimize(func, x0, args=(),
         special entry: free
         Boolean array indicating whether the variable is free (within feps) at the optimum
     """
-    # absolute tolerance for float comparisons
-    floatcompatol = 1e-14
-    x0 = np.asarray(x0)
-    if errorcontrol:
-        func = AveragedFunction(func, paired=paired)
-    else:
-        func = memoized(func)
-    if scaling is None:
-        scaling = np.ones(x0.shape)
-    else:
-        scaling = np.asarray(scaling)
     if disp:
         print 'minimization starting'
         print 'args', args
         print 'errorcontrol', errorcontrol
         print 'paired', paired
+    # absolute tolerance for float comparisons
+    floatcompatol = 1e-14
+    x0 = np.asarray(x0)
+    if scaling is None:
+        scaling = np.ones(x0.shape)
+    else:
+        scaling = np.asarray(scaling)
     # ensure initial point lies within bounds
     if bounds is not None:
         bounds = np.asarray(bounds)
         np.clip(x0, bounds[:, 0], bounds[:, 1], out=x0)
-
     def clip(x, d):
         """clip x+d to respect bounds
-        
         returns clipped result and effective distance"""
         xnew = x + d
         if bounds is not None:
@@ -137,7 +133,6 @@ def minimize(func, x0, args=(),
             return xclipped, deltaeff
         else:
             return xnew, delta
-        
     # generate set of search directions (+- s_i e_i | i = 1, ...,  N)
     def unit(i, N):
         "return ith unit vector in R^N"
@@ -146,80 +141,70 @@ def minimize(func, x0, args=(),
         return arr
     N = len(x0)
     generatingset = [unit(i, N)*direction*scaling[i] for i in np.arange(N) for direction in [+1, -1]]
-
-    # apply Bonferroni correction to confidence level
-    # (need more statistics in higher dimensions)
-    alpha = alpha/len(generatingset)
+   
+    # memoize function
+    if errorcontrol:
+        funcm = AveragedFunction(func, fargs=args, paired=paired)
+        # apply Bonferroni correction to confidence level
+        # (need more statistics in higher dimensions)
+        alpha = alpha/len(generatingset)
+    else:
+        # freeze function arguments
+        def funcf(x, **kwargs):
+            return func(x, *args, **kwargs)
+        funcm = memoized(funcf)
 
     x = x0 
-    f = func(x0, *args)
     delta = deltainit
-    # number of iterations:
+    # number of iterations
     nit = 0
-    finished = False
-    while not finished:
+    # continue as long as delta is larger than tolerance
+    # or if there was an update during the last iteration
+    while delta >= deltatol-floatcompatol or found:
         nit += 1
         # if delta gets close to deltatol, do iteration with step size deltatol instead
-        # if no improvement possible then finished stays zero and algorithm is terminated
-        # this ensures local optimality within deltatol
         if delta/redfactor < deltatol:
             delta = deltatol
-            finished = True
         if disp:
             print 'nit %i, Delta %g' % (nit, delta)
         found = False
         np.random.shuffle(generatingset)
         for d in generatingset:
             xtest, deltaeff = clip(x, delta*d)
-            if deltaeff == 0.0:
+            if deltaeff < floatcompatol:
                 continue
-            ftest = func(xtest, *args)
-            if (not errorcontrol and (ftest < f-feps)) or (errorcontrol and func.test(xtest, x, args, type_='smaller', alpha=alpha)):
+            if ((not errorcontrol and (funcm(xtest) < funcm(x)-feps))
+               or (errorcontrol
+                   and funcm.test(xtest, x, type_='smaller', alpha=alpha))):
                 x = xtest
-                f = ftest
                 found = True
                 if disp:
                     print x
-                break
-            elif ((deltaeff >= deltatol*np.sum(np.abs(d))) # do not try refinement for boundary steps smaller than tolerance
-                    and  ((not errorcontrol and (ftest < f+feps))
+            elif ((deltaeff >= deltatol*np.sum(np.abs(d))) # no refinement for boundary steps smaller than tolerance
+                    and ((not errorcontrol and (funcm(xtest) < funcm(x)+feps))
                         or (errorcontrol
-                            and func.test(xtest, x, args, type_='equality', alpha=alpha)
-                            and (func.diffse(xtest, x, args) > feps)))):
+                            and funcm.test(xtest, x, type_='equality', alpha=alpha)
+                            and (funcm.diffse(xtest, x) > feps)))):
                 # If there is no significant difference the step size might
                 # correspond to taking a step to the other side of the minimum.
-                # Therefore test if middle point significantly better
+                # Therefore test if middle point is better
                 xmid = 0.5*(x+xtest)
-                fmid = func(xmid, *args)
-                if (not errorcontrol and fmid < f-feps) or (errorcontrol and func.test(xmid, x, args, type_='smaller')):
+                if ((not errorcontrol and funcm(xmid) < funcm(x)-feps)
+                    or (errorcontrol
+                        and funcm.test(xmid, x, type_='smaller', alpha=alpha))):
                     x = xmid
-                    f = func(xmid, *args)
-                    found = True
                     delta /= redfactor
+                    found = True
                     if disp:
                         print 'mid', x
-                    break
                 # otherwise increase accuracy of simulation to try to get to significance
                 elif errorcontrol:
-                    func.setN(func.N * funcmultfactor)
+                    funcm.N *= funcmultfactor
                     if disp:
-                        print 'new N %i' % func.N
-                    if func.test(xtest, x, args, type_='smaller'):
-                        x = xtest
-                        f = ftest
-                        found = True
-                        if disp:
-                            print x
-                        break
-                    # if we still have not resolved the differnce
-                    finished = False
-                    if disp:
-                        print 'no significant difference yet', x, xtest, func.diffse(xtest, x, args)
+                        print 'new N %i' % funcm.N
+                    found = True
         if not found:
             delta /= redfactor
-        else:
-            # optimization not finished if x updated during last iteration
-            finished = False
 
     message = 'convergence within deltatol'
     # check if any of the directions are free at the optimum
@@ -230,17 +215,19 @@ def minimize(func, x0, args=(),
         xtest, deltaeff = clip(x, delta*d)
         if deltaeff < deltatol*np.sum(np.abs(d))-floatcompatol: # do not consider as free for boundary steps
             continue
-        if not free[dim] and (((not errorcontrol and func(xtest) - feps < func(x)) or
-            (errorcontrol and func.test(xtest, x, args, type_='equality', alpha=alpha)
-                and (func.diffse(xtest, x, args) < feps)))):
+        if not free[dim] and (((not errorcontrol and funcm(xtest) - feps < funcm(x)) or
+            (errorcontrol and funcm.test(xtest, x, type_='equality', alpha=alpha)
+                and (funcm.diffse(xtest, x) < feps)))):
             free[dim] = True
             message += '. dim %i is free at optimum' % dim
                 
-    reskwargs = dict(x=x, nit=nit, nfev=func.nev, message=message, free=free,
+    reskwargs = dict(x=x, nit=nit, nfev=funcm.nev, message=message, free=free,
                      success=True)
     if errorcontrol:
-        res = OptimizeResult(fun=f[0], funse=f[1], **reskwargs)
+        f, funse = funcm(x)
+        res = OptimizeResult(fun=f, funse=funse, **reskwargs)
     else:
+        f = funcm(x)
         res = OptimizeResult(fun=f, **reskwargs)
     if disp:
         print res
@@ -252,10 +239,12 @@ class AverageBase(object):
     """
     def __init__(self, N=30, paired=False):
         """
+        Parameters
+        ----------
         N: number of calls to average over.
         paired: if paired is chosen the same series of random seeds is used for different x
         """
-        self.N = N
+        self._N = N
         self.paired = paired
         if self.paired:
             self.uint32max = np.iinfo(np.uint32).max 
@@ -265,25 +254,40 @@ class AverageBase(object):
         # number of evaluations
         self.nev = 0
 
-    def setN(self, N):
-        N = int(N)
-        if self.paired and (N > self.N):
-            Nadd = N - self.N
+    @property
+    def N(self):
+        "number of evaluations"
+        return self._N
+
+    @N.setter
+    def N(self, value):
+        N = int(value)
+        if self.paired and (N > self._N):
+            Nadd = N - self._N
             self.seeds.extend(list(np.random.randint(0, self.uint32max, size=Nadd)))
-        self.N = N
+        self._N = N
 
 class AveragedFunction(AverageBase):
-    """Averages a function's return value over a number of runs
-
-        func(x, *args)
+    """Average of a function's return value over a number of runs.
 
         Caches previous results.
     """
-    def __init__(self, func, **kwargs):
+    def __init__(self, func, fargs=None, **kwargs):
+        """
+        Parameters
+        ----------
+        func : function to average
+        fargs : extra arguments for function
+        """
         super(AveragedFunction, self).__init__(**kwargs)
-        self.func = func
+        if fargs is not None:
+            def funcf(x, **kwargs):
+                return func(x, *fargs, **kwargs)
+            self.func = funcf
+        else:
+            self.func = func
 
-    def __call__(self, x, *args):
+    def __call__(self, x):
         #convert to tuple (hashable!)
         xt = tuple(x)
         if xt in self.cache:
@@ -291,39 +295,46 @@ class AveragedFunction(AverageBase):
             if Nold < self.N:
                 Nadd = self.N - Nold 
                 if self.paired:
-                    values = [self.func(x, *args, seed=self.seeds[Nold+i]) for i in range(Nadd)]
+                    values = [self.func(x, seed=self.seeds[Nold+i]) for i in range(Nadd)]
                 else:
-                    values = [self.func(x, *args) for i in range(Nadd)]
+                    values = [self.func(x) for i in range(Nadd)]
                 self.cache[xt].extend(values)
                 self.nev += Nadd
         else:
             if self.paired:
-                values = [self.func(x, *args, seed=self.seeds[i]) for i in range(self.N)]
+                values = [self.func(x, seed=self.seeds[i]) for i in range(self.N)]
             else:
-                values = [self.func(x, *args) for i in range(self.N)]
+                values = [self.func(x) for i in range(self.N)]
             self.cache[xt] = values 
             self.nev += self.N
         return np.mean(self.cache[xt]), np.std(self.cache[xt], ddof=1)/self.N**.5
 
-    def diffse(self, xtest, x, args=()):
+    def diffse(self, x1, x2):
         """Standard error of the difference between the function values at x and xtest""" 
-        ftest, ftestse = self(xtest, *args)
-        f, fse = self(x, *args)
+        f1, f1se = self(x1)
+        f2, f2se = self(x2)
         if self.paired:
-            fxtest = np.array(self.cache[tuple(xtest)])
-            fx = np.array(self.cache[tuple(x)])
-            diffse = np.std(fxtest-fx, ddof=1)/self.N**.5 
+            fx1 = np.array(self.cache[tuple(x1)])
+            fx2 = np.array(self.cache[tuple(x2)])
+            diffse = np.std(fx1-fx2, ddof=1)/self.N**.5 
             return diffse
         else:
-            return (ftestse**2 + fse**2)**.5
+            return (f1se**2 + f2se**2)**.5
 
-    def test(self, xtest, x, args=(), alpha=0.05, type_='smaller'):
-        """ type in ['smaller', 'equality']."""
+    def test(self, xtest, x, alpha=0.05, type_='smaller'):
+        """
+        Parameters
+        ----------
+        alpha: float
+            significance level
+        type_: in ['smaller', 'equality']
+            type of test to perform
+        """
         # call function to make sure it has been evaluated a sufficient number of times
         if type_ not in ['smaller', 'equality']:
             raise NotImplementedError(type_)
-        ftest, ftestse = self(xtest, *args)
-        f, fse = self(x, *args)
+        ftest, ftestse = self(xtest)
+        f, fse = self(x)
         # get function values
         fxtest = np.array(self.cache[tuple(xtest)])
         fx = np.array(self.cache[tuple(x)])
@@ -354,7 +365,7 @@ class DifferenceFunction(AverageBase):
         super(DifferenceFunction, self).__init__(**kwargs)
         self.funcs = [func1, func2]
 
-    def __call__(self, x, *args):
+    def __call__(self, x):
         try:
             # convert to tuple (hashable!)
             xt = tuple(x)
@@ -368,24 +379,24 @@ class DifferenceFunction(AverageBase):
                 if Nold < self.N:
                     Nadd = self.N - Nold 
                     if self.paired:
-                        values = [func(x, *args, seed=self.seeds[Nold+i]) for i in range(Nadd)]
+                        values = [func(x, seed=self.seeds[Nold+i]) for i in range(Nadd)]
                     else:
-                        values = [func(x, *args) for i in range(Nadd)]
+                        values = [func(x) for i in range(Nadd)]
                     self.cache[ixt].extend(values)
                     self.nev += Nadd
             else:
                 if self.paired:
-                    values = [func(x, *args, seed=self.seeds[i]) for i in range(self.N)]
+                    values = [func(x, seed=self.seeds[i]) for i in range(self.N)]
                 else:
-                    values = [func(x, *args) for i in range(self.N)]
+                    values = [func(x) for i in range(self.N)]
                 self.cache[ixt] = values 
                 self.nev += self.N
         diff = np.asarray(self.cache[(0, xt)]) - np.asarray(self.cache[(1, xt)])
         return np.mean(diff), np.std(diff, ddof=1)/self.N**.5
 
-    def test(self, x, args=(), alpha=0.05, type_='smaller'):
+    def test(self, x, alpha=0.05, type_='smaller'):
         """ type_ in ['smaller', 'equality']."""
-        diff, diffse = self(x, *args)
+        diff, diffse = self(x)
         epscal = diff / diffse
         if type_ == 'smaller':
             return epscal < scipy.stats.norm.ppf(alpha)
@@ -393,19 +404,18 @@ class DifferenceFunction(AverageBase):
             return np.abs(epscal) < scipy.stats.norm.ppf(1-alpha/2.0)
         raise NotImplementedError(type_)
 
-    def testtruesmaller(self, x, *args, **kwargs):
-        kwargs['args'] = args
+    def testtruesmaller(self, x, **kwargs):
         kwargs['type_'] = 'equality'
         disp = kwargs.pop('disp', False)
         feps = kwargs.pop('feps', 1e-15)
-        while self.test(x, **kwargs) and self(x, *args)[1] > feps:
-            self.setN(self.N*2.0)
+        while self.test(x, **kwargs) and self(x)[1] > feps:
+            self.N *= 2.0
             if disp:
-                print 'testtruesmaller', self.N, self(x, *args)[1]
+                print 'testtruesmaller', self.N, self(x)[1]
         kwargs['type_'] = 'smaller'
         return self.test(x, **kwargs)
 
-def bisect(func, a, b, args=(), xtol=1e-6, errorcontrol=False, alpha=0.05,
+def bisect(func, a, b, xtol=1e-6, errorcontrol=False, alpha=0.05,
            disp=False):
     """Find root by bysection search.
 
@@ -417,11 +427,8 @@ def bisect(func, a, b, args=(), xtol=1e-6, errorcontrol=False, alpha=0.05,
     func: callable
         Function of which the root should be found. If `errorcontrol=True`
         then the function should be derived from `AverageBase`.
-
     a, b: float
         initial interval
-    args: tuple
-        extra args to be supplied to function
     xtol: float
         target tolerance for intervall size
     errorcontrol: boolean
@@ -437,11 +444,11 @@ def bisect(func, a, b, args=(), xtol=1e-6, errorcontrol=False, alpha=0.05,
     # check whether function is ascending or not
     if errorcontrol:
         testkwargs = dict(alpha=alpha, disp=disp)
-        fa = func.testtruesmaller(a, *args, **testkwargs)
-        fb = func.testtruesmaller(b, *args, **testkwargs)
+        fa = func.testtruesmaller(a, **testkwargs)
+        fb = func.testtruesmaller(b, **testkwargs)
     else:
-        fa = func(a, *args) < 0
-        fb = func(b, *args) < 0
+        fa = func(a) < 0
+        fb = func(b) < 0
     if fa and not fb:
         ascending = True
     elif fb and not fa:
@@ -455,13 +462,13 @@ def bisect(func, a, b, args=(), xtol=1e-6, errorcontrol=False, alpha=0.05,
         mid = (a+b)/2.0
         if ascending:
             if ((not errorcontrol) and (func(mid) < 0)) or \
-                    (errorcontrol and func.testtruesmaller(mid, *args, **testkwargs)):
+                    (errorcontrol and func.testtruesmaller(mid, **testkwargs)):
                 a = mid 
             else:
                 b = mid
         else:
             if ((not errorcontrol) and (func(mid) < 0)) or \
-                    (errorcontrol and func.testtruesmaller(mid, *args, **testkwargs)):
+                    (errorcontrol and func.testtruesmaller(mid, **testkwargs)):
                 b = mid 
             else:
                 a = mid
@@ -470,9 +477,9 @@ def bisect(func, a, b, args=(), xtol=1e-6, errorcontrol=False, alpha=0.05,
         width /= 2.0
     # interpolate linearly to get zero
     if errorcontrol:
-        ya, yb = func(a, *args)[0], func(b, *args)[0]
+        ya, yb = func(a)[0], func(b)[0]
     else:
-        ya, yb = func(a, *args), func(b, *args)
+        ya, yb = func(a), func(b)
     m = (yb-ya) / (b-a)
     res = a-ya/m
     if disp:
@@ -535,4 +542,4 @@ if __name__ == "__main__":
    
     diff = DifferenceFunction(stochastic_quadratic, stochastic_quadratic)
     print diff(np.array([1.0, 2.0]))
-    print diff.test(np.array([1.0, 2.0]), (), type_ = 'equality')
+    print diff.test(np.array([1.0, 2.0]), type_ = 'equality')
