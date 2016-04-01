@@ -3,7 +3,6 @@ import numpy.testing as npt
 import noisyopt
 
 def test_minimize():
-
     deltatol = 1e-3
     ## basic testing without stochasticity
     def quadratic(x):
@@ -63,19 +62,25 @@ def test_minimize():
     npt.assert_equal(res.free, [False, False])
 
 def test_bisect():
-
     xtol = 1e-6 
-    significant = 6
+
     ## simple tests
     root = noisyopt.bisect(lambda x: x, -2, 2, xtol=xtol)
-    npt.assert_approx_equal(root, 0.0, significant=significant)
+    npt.assert_allclose(root, 0.0, atol=xtol)
 
     root = noisyopt.bisect(lambda x: x-1, -2, 2, xtol=xtol)
-    npt.assert_approx_equal(root, 1.0, significant=significant)
+    npt.assert_allclose(root, 1.0, atol=xtol)
 
     ## extrapolate if 0 outside of interval
     root = noisyopt.bisect(lambda x: x, 1, 2, xtol=xtol)
-    npt.assert_approx_equal(root, 0.0, significant=significant)
+    npt.assert_allclose(root, 0.0, atol=xtol)
+
+    ## test with stochastic function
+    xtol = 1e-1
+    func = lambda x: x - 0.25 + np.random.normal(scale=0.01)
+    root = noisyopt.bisect(noisyopt.AveragedFunction(func), -2, 2, xtol=xtol,
+                           errorcontrol=True)
+    npt.assert_allclose(root, 0.25, atol=xtol)
 
 def test_AveragedFunction():
     ## averaging a simple function 
