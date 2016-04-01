@@ -173,6 +173,7 @@ def minimize(func, x0, args=(),
             xtest, deltaeff = clip(x, delta*d)
             if deltaeff < floatcompatol:
                 continue
+            # Does xtest improve upon previous function value?
             if ((not errorcontrol and (funcm(xtest) < funcm(x)-feps))
                or (errorcontrol
                    and funcm.test(xtest, x, type_='smaller', alpha=alpha))):
@@ -180,6 +181,7 @@ def minimize(func, x0, args=(),
                 found = True
                 if disp:
                     print x
+            # Is non-improvement due to too large step size or missing statistics?
             elif ((deltaeff >= deltatol*np.sum(np.abs(d))) # no refinement for boundary steps smaller than tolerance
                     and ((not errorcontrol and (funcm(xtest) < funcm(x)+feps))
                         or (errorcontrol
@@ -267,6 +269,35 @@ class AverageBase(object):
             self.seeds.extend(list(np.random.randint(0, self.uint32max, size=Nadd)))
         self._N = N
 
+    def test0(self, x, type_='smaller', alpha=0.05, force=False, eps=1e-5, maxN=10000):
+        """
+        Compares the mean at x to zero.
+
+        Parameters
+        ----------
+        type_: in ['smaller', 'equality']
+            type of comparison to perform
+        alpha: float
+           significance level 
+        force: boolean
+            if true increase number of samples until equality rejected or meanse=eps or N > maxN
+        eps: float 
+        maxN: int
+        """
+        if force:
+            while (self.test0(x, type_='equality', alpha=alpha, force=False, eps=eps)
+                    and self(x)[1] > eps
+                    and self.N < maxN):
+                self.N *= 2.0
+
+        mean, meanse = self(x)
+        epscal = mean / meanse
+        if type_ == 'smaller':
+            return epscal < scipy.stats.norm.ppf(alpha)
+        if type_ == 'equality':
+            return np.abs(epscal) < scipy.stats.norm.ppf(1-alpha/2.0)
+        raise NotImplementedError(type_)
+
 class AveragedFunction(AverageBase):
     """Average of a function's return value over a number of runs.
 
@@ -276,7 +307,7 @@ class AveragedFunction(AverageBase):
         """
         Parameters
         ----------
-        func : function to average
+        func : function to average (called as `func(x, *fargs)`)
         fargs : extra arguments for function
         """
         super(AveragedFunction, self).__init__(**kwargs)
@@ -288,8 +319,12 @@ class AveragedFunction(AverageBase):
             self.func = func
 
     def __call__(self, x):
-        #convert to tuple (hashable!)
-        xt = tuple(x)
+        try:
+            # convert to tuple (hashable!)
+            xt = tuple(x)
+        except TypeError:
+            # if TypeError then likely floating point value
+            xt = (x, )
         if xt in self.cache:
             Nold = len(self.cache[xt])
             if Nold < self.N:
@@ -321,14 +356,14 @@ class AveragedFunction(AverageBase):
         else:
             return (f1se**2 + f2se**2)**.5
 
-    def test(self, xtest, x, alpha=0.05, type_='smaller'):
+    def test(self, xtest, x, type_='smaller', alpha=0.05):
         """
         Parameters
         ----------
+        type_: in ['smaller', 'equality']
+            type of comparison to perform
         alpha: float
             significance level
-        type_: in ['smaller', 'equality']
-            type of test to perform
         """
         # call function to make sure it has been evaluated a sufficient number of times
         if type_ not in ['smaller', 'equality']:
@@ -361,9 +396,25 @@ class AveragedFunction(AverageBase):
 class DifferenceFunction(AverageBase):
     """Averages the difference of two function's return values over a number of runs
     """
-    def __init__(self, func1, func2, **kwargs):
+    def __init__(self, func1, func2, fargs1=None, fargs2=None, **kwargs):
+        """
+        Parameters
+        ----------
+        func1,2 : functions to average (called as `func(x, *fargs)`)
+        fargs1,2 : extra arguments for functions
+        """
         super(DifferenceFunction, self).__init__(**kwargs)
-        self.funcs = [func1, func2]
+        if fargs1 is not None:
+            def func1f(x, **kwargs):
+                return func1(x, *fargs1, **kwargs)
+        else:
+            func1f = func1
+        if fargs2 is not None:
+            def func2f(x, **kwargs):
+                return func2(x, *fargs2, **kwargs)
+        else:
+            func2f = func2
+        self.funcs = [func1f, func2f]
 
     def __call__(self, x):
         try:
@@ -394,29 +445,9 @@ class DifferenceFunction(AverageBase):
         diff = np.asarray(self.cache[(0, xt)]) - np.asarray(self.cache[(1, xt)])
         return np.mean(diff), np.std(diff, ddof=1)/self.N**.5
 
-    def test(self, x, alpha=0.05, type_='smaller'):
-        """ type_ in ['smaller', 'equality']."""
-        diff, diffse = self(x)
-        epscal = diff / diffse
-        if type_ == 'smaller':
-            return epscal < scipy.stats.norm.ppf(alpha)
-        if type_ == 'equality':
-            return np.abs(epscal) < scipy.stats.norm.ppf(1-alpha/2.0)
-        raise NotImplementedError(type_)
 
-    def testtruesmaller(self, x, **kwargs):
-        kwargs['type_'] = 'equality'
-        disp = kwargs.pop('disp', False)
-        feps = kwargs.pop('feps', 1e-15)
-        while self.test(x, **kwargs) and self(x)[1] > feps:
-            self.N *= 2.0
-            if disp:
-                print 'testtruesmaller', self.N, self(x)[1]
-        kwargs['type_'] = 'smaller'
-        return self.test(x, **kwargs)
-
-def bisect(func, a, b, xtol=1e-6, errorcontrol=False, alpha=0.05,
-           disp=False):
+def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
+           testkwargs=dict(), disp=False):
     """Find root by bysection search.
 
     If the function evaluation is noisy then use `errorcontrol=True` for adaptive
@@ -433,8 +464,8 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False, alpha=0.05,
         target tolerance for intervall size
     errorcontrol: boolean
         if true, assume that function is instance of DifferenceFunction  
-    alpha: float, only for `errorcontrol=True`
-        significance level to be used for testing 
+    testkwargs: only for `errorcontrol=True`
+        see `AverageBase.test0`
 
     Returns
     -------
@@ -443,9 +474,9 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False, alpha=0.05,
     width = b-a 
     # check whether function is ascending or not
     if errorcontrol:
-        testkwargs = dict(alpha=alpha, disp=disp)
-        fa = func.testtruesmaller(a, **testkwargs)
-        fb = func.testtruesmaller(b, **testkwargs)
+        testkwargs.update(dict(type_='smaller', force=True))
+        fa = func.test0(a, **testkwargs)
+        fb = func.test0(b, **testkwargs)
     else:
         fa = func(a) < 0
         fb = func(b) < 0
@@ -462,13 +493,13 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False, alpha=0.05,
         mid = (a+b)/2.0
         if ascending:
             if ((not errorcontrol) and (func(mid) < 0)) or \
-                    (errorcontrol and func.testtruesmaller(mid, **testkwargs)):
+                    (errorcontrol and func.test0(mid, **testkwargs)):
                 a = mid 
             else:
                 b = mid
         else:
             if ((not errorcontrol) and (func(mid) < 0)) or \
-                    (errorcontrol and func.testtruesmaller(mid, **testkwargs)):
+                    (errorcontrol and func.test0(mid, **testkwargs)):
                 b = mid 
             else:
                 a = mid
@@ -491,7 +522,7 @@ class memoized(object):
     If called later with the same arguments, the cached value is returned
     (not reevaluated).
     
-    can be turned of by passing memoize=False when calling the function
+    Can be turned of by passing `memoize=False` when calling the function.
     """
     def __init__(self, func):
         self.func = func
