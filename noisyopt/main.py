@@ -160,6 +160,7 @@ def minimize(func, x0, args=(),
     nit = 0
     # continue as long as delta is larger than tolerance
     # or if there was an update during the last iteration
+    found = False
     while delta >= deltatol-floatcompatol or found:
         nit += 1
         # if delta gets close to deltatol, do iteration with step size deltatol instead
