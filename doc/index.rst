@@ -7,11 +7,16 @@ Welcome to noisyopt's documentation!
 
 .. math::
 
-    \min_{ l_i < x_i < u_i} f(\boldsymbol x),
+    \min_{ l_i < x_i < u_i} f(\boldsymbol x) = \min_{l_i < x_i < u_i} \mathbb{E}[F(\boldsymbol x, \xi)]
 
-where evaluations of the function f do not yield the precise function value, but the value plus some noise.
-The package implements a pattern search algorithm with an adaptive number of function
-evaluations to handle the stochasticity in function evaluations.
+where evaluations of the function f are not directly possible, but only evaluation
+of the function F. The expectation value of F is f, but F also depends on some random
+noise. 
+Such optimization problems arise e.g. in the context of `Simulation-based optimization
+<https://en.wikipedia.org/wiki/Simulation-based_optimization>`_.
+To solve this optimization problems the package implements a pattern search
+algorithm with an adaptive number of function evaluations to handle the stochasticity
+in function evaluations.
 
 The package also contains a function to find the root of a noisy function by a bisection
 algorithm with an adaptive number of function evaluations.

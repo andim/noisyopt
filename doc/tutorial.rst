@@ -15,11 +15,14 @@ The problem is to solve the following optimization problem
     \Omega = [-3.0, 3.0] \times [0.5, 5.0],
 
 where we do not have access to the function f directly, but only
-to some noisy approximation
+to some noisy approximation.
 
 .. math::
 
     \tilde f = f + \xi, \quad \xi \sim \mathcal{N}(0, 0.1^2).
+
+This is obviously a toy example (the solution (0.0, 0.5) is obvious from
+inspection of the problem), but similar problems arise in practice.
     
 First we need to import the ``minimize`` function from the `noisyopt` package::
 
