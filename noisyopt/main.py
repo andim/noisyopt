@@ -502,9 +502,12 @@ class DifferenceFunction(AverageBase):
         diff = np.asarray(self.cache[(0, xt)]) - np.asarray(self.cache[(1, xt)])
         return np.mean(diff), np.std(diff, ddof=1)/self.N**.5
 
+class BisectException(Exception):
+    pass
 
 def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
-           testkwargs=dict(), disp=False):
+           testkwargs=dict(), outside='extrapolate',
+           disp=False):
     """Find root by bysection search.
 
     If the function evaluation is noisy then use `errorcontrol=True` for adaptive
@@ -518,17 +521,21 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
     a, b: float
         initial interval
     xtol: float
-        target tolerance for intervall size
+        target tolerance for interval size
     errorcontrol: boolean
         if true, assume that function is instance of DifferenceFunction  
     testkwargs: only for `errorcontrol=True`
         see `AverageBase.test0`
+    outside: ['extrapolate', 'raise']
+        How to handle the case where f(a) and f(b) have same sign,
+        i.e. where the root lies outside of the interval.
+        If 'raise' throws a BisectException in this case.
 
     Returns
     -------
     float, root of function
     """
-    width = b-a 
+    search = True
     # check whether function is ascending or not
     if errorcontrol:
         testkwargs.update(dict(type_='smaller', force=True))
@@ -544,9 +551,12 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
     else:
         if disp:
             print 'Warning: func(a) and func(b) do not have opposing signs -> no search done'
-        width = 0.0
+        if outside == 'raise':
+            raise BisectException()
+        search = False
 
-    while width > xtol:
+    # refine interval until it has reached size xtol, except if root outside
+    while (b-a > xtol) and search:
         mid = (a+b)/2.0
         if ascending:
             if ((not errorcontrol) and (func(mid) < 0)) or \
@@ -562,7 +572,6 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
                 a = mid
         if disp:
             print 'bisect bounds', a, b
-        width /= 2.0
     # interpolate linearly to get zero
     if errorcontrol:
         ya, yb = func(a)[0], func(b)[0]

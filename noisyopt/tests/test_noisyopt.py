@@ -74,6 +74,13 @@ def test_bisect():
     ## extrapolate if 0 outside of interval
     root = noisyopt.bisect(lambda x: x, 1, 2, xtol=xtol)
     npt.assert_allclose(root, 0.0, atol=xtol)
+    npt.assert_raises(noisyopt.BisectException,
+                      noisyopt.bisect, lambda x: x, 1, 2,
+                      xtol=xtol, outside='raise')
+    
+    ## extrapolate with nonlinear function
+    root = noisyopt.bisect(lambda x: x+x**2, 1.0, 2, xtol=xtol)
+    assert root < 1.0
 
     ## test with stochastic function
     xtol = 1e-1
