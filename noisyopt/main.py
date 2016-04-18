@@ -235,6 +235,59 @@ def minimize(func, x0, args=(),
         print res
     return res
 
+def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=False, a=1.0, c=1.0, disp=False):
+    """
+    Minimization of an objective function by a simultaneous perturbation
+    stochastic approximation algorithm.
+
+    Parameters
+    ----------
+    func: callable
+        objective function to be minimized
+    x0: array-like
+        starting point
+    args: tuple
+        extra arguments to be supplied to func
+    bounds: array-like
+        bounds on the variables
+    scaling: array-like
+        scaling by which to multiply step size and tolerances along different dimensions
+    niter: int
+        maximum number of iterations of the algorithm
+    paired: boolean
+        calculate gradient for same random seeds
+    a, c : float
+        algorithm scaling parameter
+
+    Returns
+    -------
+    scipy.optimize.OptimizeResult object
+    """
+    A = 0.01 * niter
+    alpha = 0.602
+    gamma = 0.101
+
+    if bounds is None:
+        project = lambda x: x
+    else:
+        project = lambda x: np.clip(x, bounds[:, 0], bounds[:, 1])
+
+    N = len(x0)
+    x = x0
+    for k in range(niter):
+        ak = a/(k+1.0+A)**alpha
+        ck = c/(k+1.0)**gamma
+        delta = np.random.choice([-1, 1], size=N)
+        fkwargs = dict()
+        if paired:
+            fkwargs['seed'] = np.random.randint(0, self.uint32max, size=N)
+        grad = (func(x + ck*delta, **fkwargs) - func(x - ck*delta, **fkwargs)) / (2*ck*delta)
+        x = project(x - ak*grad)
+        if disp:
+            print x
+    message = 'terminated after reaching max number of iterations'
+    return OptimizeResult(fun=func(x), x=x, nit=niter, nfev=2*niter, message=message, success=True)
+
 class AverageBase(object):
     """
     Base class for averaged evaluation of noisy functions.
@@ -402,8 +455,11 @@ class DifferenceFunction(AverageBase):
         ----------
         func1,2 : functions to average (called as `func(x, *fargs)`)
         fargs1,2 : extra arguments for functions
+        kwargs: accepts `AverageBase` kwargs and function kwargs
         """
-        super(DifferenceFunction, self).__init__(**kwargs)
+        basekwargs = dict(N=kwargs.pop('N', 30),
+                          paired=kwargs.pop('paired', False))
+        super(DifferenceFunction, self).__init__(**basekwargs)
         if fargs1 is not None:
             def func1f(x, **kwargs):
                 return func1(x, *fargs1, **kwargs)
@@ -560,17 +616,38 @@ class memoized(object):
             return self.func(*args, **kwargs)
 
 if __name__ == "__main__":
-    import scipy.optimize
-    print minimize(scipy.optimize.rosen, np.asarray([-3.0, -4.0]), deltatol=0.00001)
-
-    def matya(x):
-        return 0.26*(x[0]**2 + x[1]**2)-0.48*x[0]*x[1]
-    print minimize(matya, np.asarray([2.0, 3.5]), deltatol=0.01)
-
     def stochastic_quadratic(x, seed=None):
-        prng = np.random if seed is None else np.random.RandomState(seed)
-        return (x**2).sum() + prng.randn(1) + 0.5*np.random.randn(1)
-   
-    diff = DifferenceFunction(stochastic_quadratic, stochastic_quadratic)
-    print diff(np.array([1.0, 2.0]))
-    print diff.test(np.array([1.0, 2.0]), type_ = 'equality')
+        return (x**2).sum() + 0.5*np.random.randn(1)
+
+    deltatol = 0.5
+    # test unpaired
+    x0 = np.array([4.5345, 3.125])
+    res = minimize(stochastic_quadratic, x0, deltatol=deltatol, errorcontrol=True, disp=True)
+    print res
+    res = minimizeSPSA(stochastic_quadratic, x0, niter=res.nfev/2)
+    print res
+    import snobfit
+    l = np.asarray([-10, -10])
+    u = np.asarray([10, 10])
+    print snobfit.snobfit(stochastic_quadratic, x0, [l, u], maxiter=res.nfev)
+#    x0 = np.array([4.5345, 3.125, 2.823, 3.5479])
+#    res = minimize(stochastic_quadratic, x0, deltatol=deltatol, errorcontrol=True, disp=True, feps=1e-2)
+#    print res
+#    res = minimizeSPSA(stochastic_quadratic, x0, niter=res.nfev/2)
+#    print res
+
+
+#    import scipy.optimize
+#    print minimize(scipy.optimize.rosen, np.asarray([-3.0, -4.0]), deltatol=0.00001)
+#
+#    def matya(x):
+#        return 0.26*(x[0]**2 + x[1]**2)-0.48*x[0]*x[1]
+#    print minimize(matya, np.asarray([2.0, 3.5]), deltatol=0.01)
+#
+#    def stochastic_quadratic(x, seed=None):
+#        prng = np.random if seed is None else np.random.RandomState(seed)
+#        return (x**2).sum() + prng.randn(1) + 0.5*np.random.randn(1)
+#   
+#    diff = DifferenceFunction(stochastic_quadratic, stochastic_quadratic)
+#    print diff(np.array([1.0, 2.0]))
+#    print diff.test0(np.array([1.0, 2.0]), type_ = 'equality')
