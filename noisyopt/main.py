@@ -507,6 +507,7 @@ class BisectException(Exception):
 
 def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
            testkwargs=dict(), outside='extrapolate',
+           ascending=None,
            disp=False):
     """Find root by bysection search.
 
@@ -530,6 +531,9 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
         How to handle the case where f(a) and f(b) have same sign,
         i.e. where the root lies outside of the interval.
         If 'raise' throws a BisectException in this case.
+    ascending: allow passing in directly whether function is ascending or not
+        if ascending=True then it is assumed without check that f(a) < 0 and f(b) > 0
+        if ascending=False then it is assumed without check that f(a) > 0 and f(b) < 0
 
     Returns
     -------
@@ -537,23 +541,24 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
     """
     search = True
     # check whether function is ascending or not
-    if errorcontrol:
-        testkwargs.update(dict(type_='smaller', force=True))
-        fa = func.test0(a, **testkwargs)
-        fb = func.test0(b, **testkwargs)
-    else:
-        fa = func(a) < 0
-        fb = func(b) < 0
-    if fa and not fb:
-        ascending = True
-    elif fb and not fa:
-        ascending =  False
-    else:
-        if disp:
-            print 'Warning: func(a) and func(b) do not have opposing signs -> no search done'
-        if outside == 'raise':
-            raise BisectException()
-        search = False
+    if ascending is None:
+        if errorcontrol:
+            testkwargs.update(dict(type_='smaller', force=True))
+            fa = func.test0(a, **testkwargs)
+            fb = func.test0(b, **testkwargs)
+        else:
+            fa = func(a) < 0
+            fb = func(b) < 0
+        if fa and not fb:
+            ascending = True
+        elif fb and not fa:
+            ascending =  False
+        else:
+            if disp:
+                print 'Warning: func(a) and func(b) do not have opposing signs -> no search done'
+            if outside == 'raise':
+                raise BisectException()
+            search = False
 
     # refine interval until it has reached size xtol, except if root outside
     while (b-a > xtol) and search:
