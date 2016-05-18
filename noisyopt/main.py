@@ -58,8 +58,8 @@ except:
 def minimize(func, x0, args=(),
             bounds=None, scaling=None,
             redfactor=2.0, deltainit=1.0, deltatol=1e-3, feps=1e-15,
-            errorcontrol=False, funcmultfactor=2.0, paired=False, alpha=0.05,
-            disp=False, **kwargs):
+            errorcontrol=False, funcmultbasis=30, funcmultfactor=2.0,
+            paired=False, alpha=0.05, disp=False, **kwargs):
     """
     Minimization of an objective function by a pattern search.
 
@@ -90,12 +90,14 @@ def minimize(func, x0, args=(),
     feps: float
        smallest difference in function value to resolve 
     errorcontrol: boolean
-        whether to control error of simulation 
+        whether to control error of simulation
+    funcmultbasis: float, only for errorcontrol=True
+        initial number of iterations to use for the function
     funcmultfactor: float, only for errorcontol=True
         multiplication factor by which to increase number of iterations of function
     paired: boolean, only for errorcontol=True
         compare for same random seeds
-    alpha: float, only for errorcontol=True
+    alpha: float, only for errorcontrol=True
         significance level of tests, the higher this value the more statistics
         is acquired, which decreases the risk of taking a step in a non-descent
         direction at the expense of higher computational cost per iteration
@@ -144,7 +146,8 @@ def minimize(func, x0, args=(),
    
     # memoize function
     if errorcontrol:
-        funcm = AveragedFunction(func, fargs=args, paired=paired)
+        funcm = AveragedFunction(
+            func, fargs=args, paired=paired, N=funcmultbasis)
         # apply Bonferroni correction to confidence level
         # (need more statistics in higher dimensions)
         alpha = alpha/len(generatingset)
