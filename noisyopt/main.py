@@ -58,7 +58,7 @@ except:
 def minimize(func, x0, args=(),
             bounds=None, scaling=None,
             redfactor=2.0, deltainit=1.0, deltatol=1e-3, feps=1e-15,
-            errorcontrol=False, funcmultbasis=30, funcmultfactor=2.0,
+            errorcontrol=False, funcNinit=30, funcmultfactor=2.0,
             paired=False, alpha=0.05, disp=False, **kwargs):
     """
     Minimization of an objective function by a pattern search.
@@ -91,8 +91,9 @@ def minimize(func, x0, args=(),
        smallest difference in function value to resolve 
     errorcontrol: boolean
         whether to control error of simulation
-    funcmultbasis: float, only for errorcontrol=True
-        initial number of iterations to use for the function
+    funcNinit: int, only for errorcontrol=True
+        initial number of iterations to use for the function, do not set much lower
+        than 30 as otherwise there is no sufficient statistics for function comparisons
     funcmultfactor: float, only for errorcontol=True
         multiplication factor by which to increase number of iterations of function
     paired: boolean, only for errorcontol=True
@@ -147,7 +148,7 @@ def minimize(func, x0, args=(),
     # memoize function
     if errorcontrol:
         funcm = AveragedFunction(
-            func, fargs=args, paired=paired, N=funcmultbasis)
+            func, fargs=args, paired=paired, N=funcNinit)
         # apply Bonferroni correction to confidence level
         # (need more statistics in higher dimensions)
         alpha = alpha/len(generatingset)
@@ -303,11 +304,11 @@ class AverageBase(object):
         N: number of calls to average over.
         paired: if paired is chosen the same series of random seeds is used for different x
         """
-        self._N = N
+        self._N = int(N)
         self.paired = paired
         if self.paired:
             self.uint32max = np.iinfo(np.uint32).max 
-            self.seeds = list(np.random.randint(0, self.uint32max, size=N))
+            self.seeds = list(np.random.randint(0, self.uint32max, size=int(N)))
         # cache previous iterations
         self.cache = {}
         # number of evaluations

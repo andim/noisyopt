@@ -120,5 +120,8 @@ def test_AveragedFunction():
     assert av30_1 != av60
     assert avse30_1 > avse60
 
+    # test with floating point N
+    noisyopt.AveragedFunction(func, N=30.0, paired=True)
+
 if __name__ == '__main__':
     npt.run_module_suite()
