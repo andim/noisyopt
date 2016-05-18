@@ -4,8 +4,8 @@ from os.path import join as pjoin
 _version_major = 0
 _version_minor = 1
 _version_micro = ''  # use '' for first of series, number for 1 and above
-_version_extra = 'dev'
-# _version_extra = ''  # Uncomment this for full releases
+#_version_extra = 'dev'
+ _version_extra = ''  # Uncomment this for full releases
 
 # Construct full version string from these.
 _ver = [_version_major, _version_minor]
@@ -16,7 +16,7 @@ if _version_extra:
 
 __version__ = '.'.join(map(str, _ver))
 
-CLASSIFIERS = ["Development Status :: 3 - Alpha",
+CLASSIFIERS = ["Development Status :: 4 - Beta",
                "Environment :: Console",
                "Intended Audience :: Science/Research",
                "License :: OSI Approved :: MIT License",
@@ -25,12 +25,9 @@ CLASSIFIERS = ["Development Status :: 3 - Alpha",
                "Topic :: Scientific/Engineering"]
 
 # Description should be a one-liner:
-description = "noisyopt: Pattern search optimization dealing intelligently with noisy function evaluation" 
+description = "Pattern search optimization dealing intelligently with noisy function evaluation" 
 # Long description will go up on the pypi page
 long_description = """
-
-noisyopt
-========
 Noisyopt is a library for local optimization of noisy objective functions.
 
 Optimization in the presence of stochasticity in the objective function
@@ -38,11 +35,7 @@ evaluation is challenging. This library provides a simple, robust algorithm
 to solve this problem based on pattern search with adaptive sampling of
 the noisy objective function.
 
-License
-=======
-``noisyopt`` is licensed under the terms of the MIT license.
-
-Copyright (c) 2016--, Andreas Mayer
+For more info see the `documentation <http://noisyopt.readthedocs.io/en/latest/>`_ or the `source code <http://github.com/andim/noisyopt>`_.
 """
 
 NAME = "noisyopt"
