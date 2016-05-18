@@ -19,10 +19,10 @@ before_install:
 - conda config --set always_yes yes
 - conda update conda
 - conda info -a
-- conda install python=$TRAVIS_PYTHON_VERSION $CONDA_DEPS
-- travis_retry pip install $PIP_DEPS
 
 install:
+- conda install python=$TRAVIS_PYTHON_VERSION $CONDA_DEPS
+- travis_retry pip install $PIP_DEPS
 - python setup.py install --record installed_files.txt
 
 script:
