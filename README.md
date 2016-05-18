@@ -7,17 +7,17 @@ Pattern search optimization dealing intelligently with noisy function evaluation
 
 ## Installation
 
-To install run the following in the main directory:
+Noisyopt is on [PyPI](https://pypi.python.org/pypi/noisyopt/) so you can install it using `pip install noisyopt`.
+
+Alternatively you can install it from source by obtaining the source code from [Github](https://github.com/andim/noisyopt) and then running the following in the main directory:
 
    python setup.py install
 
-The package depends on the numpy and scipy packages.
+If you install from source, you first need to install the dependencies `numpy` and `scipy`.
 
 ## Testing
 
-You can run the modules testsuite using the py.test testing framework:
-    
-    py.test
+You can run the testsuite using the py.test testing framework `py.test`.
 
 ## Contributing
 
