@@ -42,13 +42,12 @@ And we define the initial guess::
 
   >>> x0 = np.array([-2.0, 2.0])
                
-The algoritm is called using the ``minimize`` function. The `minimize`
+The algorithm is called using the ``minimize`` function. The `minimize`
 functions accepts the problem objective ``obj`` and block constraints::
 
   >>> res = minimize(obj, bounds=bounds, x0=x0, deltatol=0.1, errorcontrol=True)
 
-In the above we use the default settings of the `DIRECT` algorithm.
-It us possible to costumize the algorithm using the parameters of
+It is possible to further customize the algorithm using the parameters of
 the ``minimize`` function (see :py:func:`scipydirect.minimize`).
 
 The ``minimize`` function returns a result object ``res`` making accessible among 
