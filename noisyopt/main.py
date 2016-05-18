@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.stats
+from scipy import stats
 
 # include OptimizeResult class for machines on which scipy version is too old
 try:
@@ -354,9 +354,9 @@ class AverageBase(object):
         mean, meanse = self(x)
         epscal = mean / meanse
         if type_ == 'smaller':
-            return epscal < scipy.stats.norm.ppf(alpha)
+            return epscal < stats.norm.ppf(alpha)
         if type_ == 'equality':
-            return np.abs(epscal) < scipy.stats.norm.ppf(1-alpha/2.0)
+            return np.abs(epscal) < stats.norm.ppf(1-alpha/2.0)
         raise NotImplementedError(type_)
 
 class AveragedFunction(AverageBase):
@@ -443,13 +443,13 @@ class AveragedFunction(AverageBase):
                 return False
         if self.paired:
             # if values are paired then test on distribution of differences
-            statistic, pvalue = scipy.stats.ttest_rel(fxtest, fx, axis=None)
+            statistic, pvalue = stats.ttest_rel(fxtest, fx, axis=None)
         else:
-            statistic, pvalue = scipy.stats.ttest_ind(fxtest, fx, equal_var=False, axis=None)
+            statistic, pvalue = stats.ttest_ind(fxtest, fx, equal_var=False, axis=None)
         if type_ == 'smaller':
             # if paired then df=N-1, else df=N1+N2-2=2*N-2 
             df = self.N-1 if self.paired else 2*self.N-2
-            pvalue = scipy.stats.t.cdf(statistic, df) 
+            pvalue = stats.t.cdf(statistic, df) 
             # return true if null hypothesis rejected
             return pvalue < alpha
         if type_ == 'equality':
