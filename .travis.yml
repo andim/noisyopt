@@ -7,7 +7,7 @@ python:
   - 2.7
 
 env:
-  - CONDA_DEPS="pip pytest numpy scipy" PIP_DEPS="coveralls"
+  - CONDA_DEPS="pip pytest nose numpy scipy" PIP_DEPS="coveralls"
 
 before_install:
 - export MINICONDA=$HOME/miniconda
