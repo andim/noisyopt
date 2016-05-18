@@ -1,4 +1,5 @@
 [![Documentation Status](https://readthedocs.org/projects/noisyopt/badge/?version=latest)](http://noisyopt.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/andim/noisyopt.svg?branch=master)](https://travis-ci.org/andim/noisyopt)
 
 # noisyopt
 
