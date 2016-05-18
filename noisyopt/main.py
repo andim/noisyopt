@@ -7,7 +7,8 @@ try:
 except:
     class OptimizeResult(dict):
         """ Represents the optimization result.
-        Attributes
+
+        Parameters
         ----------
         x : ndarray
             The solution of the optimization.
