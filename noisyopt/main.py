@@ -91,13 +91,13 @@ def minimize(func, x0, args=(),
     feps: float
        smallest difference in function value to resolve 
     errorcontrol: boolean
-        whether to control error of simulation
+        whether to control error of simulation by repeated sampling
     funcNinit: int, only for errorcontrol=True
         initial number of iterations to use for the function, do not set much lower
         than 30 as otherwise there is no sufficient statistics for function comparisons
-    funcmultfactor: float, only for errorcontol=True
+    funcmultfactor: float, only for errorcontrol=True
         multiplication factor by which to increase number of iterations of function
-    paired: boolean, only for errorcontol=True
+    paired: boolean, only for errorcontrol=True
         compare for same random seeds
     alpha: float, only for errorcontrol=True
         significance level of tests, the higher this value the more statistics
