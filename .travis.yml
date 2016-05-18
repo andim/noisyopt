@@ -7,7 +7,7 @@ python:
   - 2.7
 
 env:
-  - CONDA_DEPS="pip numpy scipy" PIP_DEPS="coveralls"
+  - CONDA_DEPS="pip pytest numpy scipy" PIP_DEPS="coveralls"
 
 before_install:
 - export MINICONDA=$HOME/miniconda
@@ -21,7 +21,7 @@ before_install:
 - conda info -a
 
 install:
-- conda install python=$TRAVIS_PYTHON_VERSION $CONDA_DEPS
+- conda install --yes python=$TRAVIS_PYTHON_VERSION $CONDA_DEPS
 - travis_retry pip install $PIP_DEPS
 - python setup.py install --record installed_files.txt
 
