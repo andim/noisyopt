@@ -301,8 +301,10 @@ class AverageBase(object):
         """
         Parameters
         ----------
-        N: number of calls to average over.
-        paired: if paired is chosen the same series of random seeds is used for different x
+        N: int
+            number of calls to average over.
+        paired: boolean
+            if paired is chosen the same series of random seeds is used for different x
         """
         self._N = int(N)
         self.paired = paired
@@ -365,8 +367,10 @@ class AveragedFunction(AverageBase):
         """
         Parameters
         ----------
-        func : function to average (called as `func(x, *fargs)`)
-        fargs : extra arguments for function
+        func : callable
+            function to average (called as `func(x, *fargs)`)
+        fargs : tuple
+            extra arguments for function
         """
         super(AveragedFunction, self).__init__(**kwargs)
         if fargs is not None:
@@ -403,7 +407,7 @@ class AveragedFunction(AverageBase):
         return np.mean(self.cache[xt]), np.std(self.cache[xt], ddof=1)/self.N**.5
 
     def diffse(self, x1, x2):
-        """Standard error of the difference between the function values at x and xtest""" 
+        """Standard error of the difference between the function values at x1 and x2""" 
         f1, f1se = self(x1)
         f2, f2se = self(x2)
         if self.paired:
@@ -458,9 +462,12 @@ class DifferenceFunction(AverageBase):
         """
         Parameters
         ----------
-        func1,2 : functions to average (called as `func(x, *fargs)`)
-        fargs1,2 : extra arguments for functions
-        kwargs: accepts `AverageBase` kwargs and function kwargs
+        func1,2 : callables
+            functions to average (called as `func(x, *fargs)`)
+        fargs1,2 : tuples
+            extra arguments for functions
+        kwargs: various
+            accepts `AverageBase` kwargs and function kwargs
         """
         basekwargs = dict(N=kwargs.pop('N', 30),
                           paired=kwargs.pop('paired', False))
