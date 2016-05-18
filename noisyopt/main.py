@@ -59,8 +59,8 @@ except:
 def minimize(func, x0, args=(),
             bounds=None, scaling=None,
             redfactor=2.0, deltainit=1.0, deltatol=1e-3, feps=1e-15,
-            errorcontrol=False, funcNinit=30, funcmultfactor=2.0,
-            paired=False, alpha=0.05, disp=False, **kwargs):
+            errorcontrol=True, funcNinit=30, funcmultfactor=2.0,
+            paired=True, alpha=0.05, disp=False, **kwargs):
     """
     Minimization of an objective function by a pattern search.
 
@@ -517,7 +517,7 @@ class DifferenceFunction(AverageBase):
 class BisectException(Exception):
     pass
 
-def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
+def bisect(func, a, b, xtol=1e-6, errorcontrol=True,
            testkwargs=dict(), outside='extrapolate',
            ascending=None,
            disp=False):

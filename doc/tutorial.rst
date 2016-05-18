@@ -45,7 +45,7 @@ And we define the initial guess::
 The algorithm is called using the ``minimize`` function. The `minimize`
 functions accepts the problem objective ``obj`` and block constraints::
 
-  >>> res = minimize(obj, bounds=bounds, x0=x0, deltatol=0.1, errorcontrol=True)
+  >>> res = minimize(obj, bounds=bounds, x0=x0, deltatol=0.1)
 
 It is possible to further customize the algorithm using the parameters of
 the ``minimize`` function (see :py:func:`scipydirect.minimize`).

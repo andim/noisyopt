@@ -8,28 +8,33 @@ def test_minimize():
     def quadratic(x):
         return (x**2).sum()
 
-    res = noisyopt.minimize(quadratic, np.asarray([0.5, 1.0]), deltatol=deltatol)
+    res = noisyopt.minimize(quadratic, np.asarray([0.5, 1.0]), deltatol=deltatol,
+                            errorcontrol=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
-    res = noisyopt.minimize(quadratic, np.asarray([2.5, -3.2]), deltatol=deltatol)
+    res = noisyopt.minimize(quadratic, np.asarray([2.5, -3.2]), deltatol=deltatol,
+                            errorcontrol=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
     res = noisyopt.minimize(quadratic, np.asarray([2.5, -3.2, 0.9, 10.0, -0.3]),
-                            deltatol=deltatol)
+                            deltatol=deltatol, errorcontrol=False)
     npt.assert_allclose(res.x, np.zeros(5), atol=deltatol)
     npt.assert_equal(res.free, [False, False, False, False, False])
 
     ## test bound handling
     res = noisyopt.minimize(quadratic, np.asarray([0.5, 0.5]),
-                            bounds=np.asarray([[0, 1], [0, 1]]), deltatol=deltatol)
+                            bounds=np.asarray([[0, 1], [0, 1]]),
+                            deltatol=deltatol,
+                            errorcontrol=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
     res = noisyopt.minimize(quadratic, np.asarray([0.8, 0.8]),
                             bounds=np.asarray([[0.5, 1], [0.5, 1]]),
-                            deltatol=deltatol)
+                            deltatol=deltatol,
+                            errorcontrol=False)
     npt.assert_allclose(res.x, [0.5, 0.5], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
@@ -38,7 +43,8 @@ def test_minimize():
     def quadratic_except_last(x):
         return (x[:-1]**2).sum()
 
-    res = noisyopt.minimize(quadratic_except_last, np.asarray([0.5, 1.0]))
+    res = noisyopt.minimize(quadratic_except_last, np.asarray([0.5, 1.0]),
+                            errorcontrol=False)
     npt.assert_approx_equal(res.x[0], 0.0)
     npt.assert_equal(res.free, [False, True])
 
@@ -51,7 +57,7 @@ def test_minimize():
     # test unpaired
     res = noisyopt.minimize(stochastic_quadratic, np.array([4.55, 3.0]),
                             deltainit=2.0, deltatol=deltatol,
-                            errorcontrol=True)
+                            errorcontrol=True, paired=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
     # test paired
@@ -65,21 +71,25 @@ def test_bisect():
     xtol = 1e-6 
 
     ## simple tests
-    root = noisyopt.bisect(lambda x: x, -2, 2, xtol=xtol)
+    root = noisyopt.bisect(lambda x: x, -2, 2, xtol=xtol,
+                           errorcontrol=False)
     npt.assert_allclose(root, 0.0, atol=xtol)
 
-    root = noisyopt.bisect(lambda x: x-1, -2, 2, xtol=xtol)
+    root = noisyopt.bisect(lambda x: x-1, -2, 2, xtol=xtol,
+                           errorcontrol=False)
     npt.assert_allclose(root, 1.0, atol=xtol)
 
     ## extrapolate if 0 outside of interval
-    root = noisyopt.bisect(lambda x: x, 1, 2, xtol=xtol)
+    root = noisyopt.bisect(lambda x: x, 1, 2, xtol=xtol,
+                           errorcontrol=False)
     npt.assert_allclose(root, 0.0, atol=xtol)
     npt.assert_raises(noisyopt.BisectException,
                       noisyopt.bisect, lambda x: x, 1, 2,
-                      xtol=xtol, outside='raise')
+                      xtol=xtol, outside='raise', errorcontrol=False)
     
     ## extrapolate with nonlinear function
-    root = noisyopt.bisect(lambda x: x+x**2, 1.0, 2, xtol=xtol)
+    root = noisyopt.bisect(lambda x: x+x**2, 1.0, 2, xtol=xtol,
+                           errorcontrol=False)
     assert root < 1.0
 
     ## test with stochastic function
