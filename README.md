@@ -1,5 +1,8 @@
-[![Documentation Status](https://readthedocs.org/projects/noisyopt/badge/?version=latest)](http://noisyopt.readthedocs.io/en/latest/?badge=latest)
+[![License](https://img.shields.io/pypi/l/noisyopt.svg)](https://github.com/andim/noisyopt/blob/master/LICENSE)
+![Status](https://img.shields.io/pypi/status/noisyopt.svg)
+[![Latest release](https://img.shields.io/pypi/v/noisyopt.svg)](https://pypi.python.org/pypi/noisyopt)
 [![Build Status](https://travis-ci.org/andim/noisyopt.svg?branch=master)](https://travis-ci.org/andim/noisyopt)
+[![Documentation Status](https://readthedocs.org/projects/noisyopt/badge/?version=latest)](https://noisyopt.readthedocs.io/en/latest/?badge=latest)
 
 # noisyopt
 
