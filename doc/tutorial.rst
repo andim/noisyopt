@@ -42,13 +42,12 @@ And we define the initial guess::
 
   >>> x0 = np.array([-2.0, 2.0])
                
-The algorithm is called using the ``minimize`` function. The `minimize`
-functions accepts the problem objective ``obj`` and block constraints::
+The pattern search based optimization algorithm is called using the ``minimize`` function. The `minimize` functions accepts the problem objective ``obj`` and block constraints::
 
-  >>> res = minimize(obj, bounds=bounds, x0=x0, deltatol=0.1, errorcontrol=True)
+  >>> res = minimize(obj, x0, bounds=bounds, deltatol=0.1, errorcontrol=True)
 
 It is possible to further customize the algorithm using the parameters of
-the ``minimize`` function (see :py:func:`scipydirect.minimize`).
+the ``minimize`` function (see :py:func:`noisyopt.minimize`). Alternatively we can also try a different algorithm implementing a simultaneous perturbation stochastic approximation algorithm (see :py:func:`noisyopt.minimizeSPSA`).
 
 The ``minimize`` function returns a result object ``res`` making accessible among 
 other the optimal point, ``res.x``, and the value of the objective at the
