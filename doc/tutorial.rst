@@ -36,7 +36,7 @@ Then we need to define the objective of the function::
 
 We now define the domain of the problem using bound constraints::
 
-  >>> bounds=[[-3.0, 3.0], [0.5, 5.0]]
+  >>> bounds = [[-3.0, 3.0], [0.5, 5.0]]
 
 And we define the initial guess::
 
@@ -54,7 +54,7 @@ The ``minimize`` function returns a result object ``res`` making accessible amon
 other the optimal point, ``res.x``, and the value of the objective at the
 optimum, ``res.fun``::
 
-  >>> print res
+  >>> print(res)
        funse: 0.0089061854063998726
      success: True
         free: array([False, False], dtype=bool)

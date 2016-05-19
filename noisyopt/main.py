@@ -111,10 +111,10 @@ def minimize(func, x0, args=(),
         Boolean array indicating whether the variable is free (within feps) at the optimum
     """
     if disp:
-        print 'minimization starting'
-        print 'args', args
-        print 'errorcontrol', errorcontrol
-        print 'paired', paired
+        print('minimization starting')
+        print('args', args)
+        print('errorcontrol', errorcontrol)
+        print('paired', paired)
     # absolute tolerance for float comparisons
     floatcompatol = 1e-14
     x0 = np.asarray(x0)
@@ -172,7 +172,7 @@ def minimize(func, x0, args=(),
         if delta/redfactor < deltatol:
             delta = deltatol
         if disp:
-            print 'nit %i, Delta %g' % (nit, delta)
+            print('nit %i, Delta %g' % (nit, delta))
         found = False
         np.random.shuffle(generatingset)
         for d in generatingset:
@@ -186,7 +186,7 @@ def minimize(func, x0, args=(),
                 x = xtest
                 found = True
                 if disp:
-                    print x
+                    print(x)
             # Is non-improvement due to too large step size or missing statistics?
             elif ((deltaeff >= deltatol*np.sum(np.abs(d))) # no refinement for boundary steps smaller than tolerance
                     and ((not errorcontrol and (funcm(xtest) < funcm(x)+feps))
@@ -204,12 +204,12 @@ def minimize(func, x0, args=(),
                     delta /= redfactor
                     found = True
                     if disp:
-                        print 'mid', x
+                        print('mid', x)
                 # otherwise increase accuracy of simulation to try to get to significance
                 elif errorcontrol:
                     funcm.N *= funcmultfactor
                     if disp:
-                        print 'new N %i' % funcm.N
+                        print('new N %i' % funcm.N)
                     found = True
         if not found:
             delta /= redfactor
@@ -238,7 +238,7 @@ def minimize(func, x0, args=(),
         f = funcm(x)
         res = OptimizeResult(fun=f, **reskwargs)
     if disp:
-        print res
+        print(res)
     return res
 
 def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=False, a=1.0, c=1.0, disp=False):
@@ -290,7 +290,7 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=False, a=1.0,
         grad = (func(x + ck*delta, **fkwargs) - func(x - ck*delta, **fkwargs)) / (2*ck*delta)
         x = project(x - ak*grad)
         if disp:
-            print x
+            print(x)
     message = 'terminated after reaching max number of iterations'
     return OptimizeResult(fun=func(x), x=x, nit=niter, nfev=2*niter, message=message, success=True)
 
@@ -567,7 +567,7 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=True,
             ascending =  False
         else:
             if disp:
-                print 'Warning: func(a) and func(b) do not have opposing signs -> no search done'
+                print('Warning: func(a) and func(b) do not have opposing signs -> no search done')
             if outside == 'raise':
                 raise BisectException()
             search = False
@@ -588,7 +588,7 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=True,
             else:
                 a = mid
         if disp:
-            print 'bisect bounds', a, b
+            print('bisect bounds', a, b)
     # interpolate linearly to get zero
     if errorcontrol:
         ya, yb = func(a)[0], func(b)[0]
@@ -597,7 +597,7 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=True,
     m = (yb-ya) / (b-a)
     res = a-ya/m
     if disp:
-        print 'bisect final value', res
+        print('bisect final value', res)
     return res
 
 class memoized(object):
@@ -622,7 +622,7 @@ class memoized(object):
                 for arg in args:
                     index += tuple(arg)
                 # try to also recompute if kwargs changed
-                for item in kwargs.itervalues():
+                for item in kwargs.values():
                     try:
                         index += (float(item), )
                     except:
@@ -635,7 +635,7 @@ class memoized(object):
                     self.cache[index] = value
                     return value
             except TypeError:
-                print 'not hashable', args
+                print('not hashable', args)
                 self.nev += 1
                 return self.func(*args, **kwargs)
         else:
