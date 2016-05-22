@@ -104,17 +104,17 @@ def test_AveragedFunction():
     func = lambda x: np.asarray(x).sum()
     avfunc = noisyopt.AveragedFunction(func, N=30)
     av, avse = avfunc([1.0, 1.0])
-    npt.assert_equal(av, 2.0)
-    npt.assert_equal(avse, 0.0) 
+    assert av == 2.0
+    assert avse == 0.0
 
     # se of function value difference between two points is zero
     # (as function evaluation is not stochastic)
     diffse = avfunc.diffse([1.0, 1.0], [2.0, 1.0])
-    npt.assert_equal(diffse, 0.0)
+    assert diffse == 0.0
 
     ## changing the number of evaluations
     avfunc.N *= 2
-    npt.assert_equal(avfunc.N, 60)
+    assert avfunc.N == 60
 
     ## averaging a stochastic function
     func = lambda x: np.asarray(x).sum() + np.random.randn()
@@ -122,8 +122,8 @@ def test_AveragedFunction():
     # check that reevaluation gives the same thing due to caching
     av30_1, avse30_1 = avfunc([1.0, 1.0])
     av30_2, avse30_2 = avfunc([1.0, 1.0])
-    npt.assert_equal(av30_1, av30_2)
-    npt.assert_equal(avse30_1, avse30_2)
+    assert av30_1 == av30_2
+    assert avse30_1 == avse30_2
     # check that se decreases if 
     avfunc.N *= 2
     av60, avse60 = avfunc([1.0, 1.0])
