@@ -133,5 +133,14 @@ def test_AveragedFunction():
     # test with floating point N
     noisyopt.AveragedFunction(func, N=30.0, paired=True)
 
+def test_memoized():
+    # memoize simple function
+    funcm = noisyopt.memoized(lambda x, y: x)
+    assert funcm(0.5, 1.0, nothashable='raise') == 0.5
+
+    # memoize function depending on numpy array
+    funcm = noisyopt.memoized(lambda x: x.sum())
+    npt.assert_almost_equal(funcm(np.array([0.1, 0.2]), nothashable='raise'), 0.3)
+
 if __name__ == '__main__':
     npt.run_module_suite()

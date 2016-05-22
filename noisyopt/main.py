@@ -602,10 +602,12 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=True,
 
 class memoized(object):
     """Decorator. Caches a function's return value each time it is called.
+
     If called later with the same arguments, the cached value is returned
     (not reevaluated).
-    
     Can be turned of by passing `memoize=False` when calling the function.
+
+    If the function arguments are not hashable, the cached value is 
     """
     def __init__(self, func):
         self.func = func
@@ -616,11 +618,17 @@ class memoized(object):
         # if args is not Hashable we can't cache
         # easier to ask for forgiveness than permission
         memoize = kwargs.pop('memoize', True)
+        nothashable = kwargs.pop('nothashable', 'ignore')
         if memoize:
             try:
                 index = ()
                 for arg in args:
-                    index += tuple(arg)
+                    # unwrap iterable arguments
+                    # (needed e.g. for np.ndarray which is not hashable)
+                    try:
+                        index += tuple(arg)
+                    except TypeError:
+                        index += (arg, ) 
                 # try to also recompute if kwargs changed
                 for item in kwargs.values():
                     try:
@@ -635,9 +643,12 @@ class memoized(object):
                     self.cache[index] = value
                     return value
             except TypeError:
-                print('not hashable', args)
-                self.nev += 1
-                return self.func(*args, **kwargs)
+                if nothashable == 'raise':
+                    raise TypeError('Not hashable: %s' % str(args))
+                else:
+                    print('not hashable', args)
+                    self.nev += 1
+                    return self.func(*args, **kwargs)
         else:
             self.nev += 1
             return self.func(*args, **kwargs)
