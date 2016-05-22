@@ -67,6 +67,49 @@ def test_minimize():
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
+def test_minimizeSPSA():
+
+    deltatol = 0.25
+
+    ## basic testing without stochasticity
+    def quadratic(x):
+        return (x**2).sum()
+
+    res = noisyopt.minimizeSPSA(quadratic, np.asarray([0.5, 1.0]), paired=False)
+    npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
+
+    res = noisyopt.minimizeSPSA(quadratic, np.asarray([2.5, -3.2]), paired=False)
+    npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
+
+    res = noisyopt.minimizeSPSA(quadratic, np.asarray([2.5, -3.2, 0.9, 10.0, -0.3]), paired=False)
+    npt.assert_allclose(res.x, np.zeros(5), atol=deltatol)
+
+    ## test bound handling
+    res = noisyopt.minimizeSPSA(quadratic, np.asarray([0.5, 0.5]),
+                            bounds=np.asarray([[0, 1], [0, 1]]),
+                            paired=False)
+    npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
+
+    res = noisyopt.minimizeSPSA(quadratic, np.asarray([0.8, 0.8]),
+                            bounds=np.asarray([[0.5, 1], [0.5, 1]]),
+                            paired=False)
+    npt.assert_allclose(res.x, [0.5, 0.5], atol=deltatol)
+
+
+    ## test errorcontrol for stochastic function
+    def stochastic_quadratic(x, seed=None):
+        prng = np.random if seed is None else np.random.RandomState(seed)
+        return (x**2).sum() + prng.randn(1) + 0.5*np.random.randn(1)
+
+    # test unpaired
+    res = noisyopt.minimizeSPSA(stochastic_quadratic, np.array([4.55, 3.0]),
+                            paired=False)
+    npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
+    # test paired
+    res = noisyopt.minimizeSPSA(stochastic_quadratic, np.array([4.55, 3.0]),
+                            paired=True)
+    npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
+
 def test_bisect():
     xtol = 1e-6 
 

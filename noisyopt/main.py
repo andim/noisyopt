@@ -241,7 +241,7 @@ def minimize(func, x0, args=(),
         print(res)
     return res
 
-def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=False, a=1.0, c=1.0, disp=False):
+def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True, a=1.0, c=1.0, disp=False):
     """
     Minimization of an objective function by a simultaneous perturbation
     stochastic approximation algorithm.
@@ -276,6 +276,7 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=False, a=1.0,
     if bounds is None:
         project = lambda x: x
     else:
+        bounds = np.asarray(bounds)
         project = lambda x: np.clip(x, bounds[:, 0], bounds[:, 1])
 
     N = len(x0)
@@ -286,7 +287,7 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=False, a=1.0,
         delta = np.random.choice([-1, 1], size=N)
         fkwargs = dict()
         if paired:
-            fkwargs['seed'] = np.random.randint(0, self.uint32max, size=N)
+            fkwargs['seed'] = np.random.randint(0, np.iinfo(np.uint32).max, size=N)
         grad = (func(x + ck*delta, **fkwargs) - func(x - ck*delta, **fkwargs)) / (2*ck*delta)
         x = project(x - ak*grad)
         if disp:
