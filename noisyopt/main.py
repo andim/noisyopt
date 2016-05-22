@@ -607,7 +607,9 @@ class memoized(object):
     (not reevaluated).
     Can be turned of by passing `memoize=False` when calling the function.
 
-    If the function arguments are not hashable, the cached value is 
+    If the function arguments are not hashable, then no caching is attempted
+    and the function is evaluated at every call. An error can instead be raised
+    by passing `nothashable=raise` when calling the function.
     """
     def __init__(self, func):
         self.func = func
