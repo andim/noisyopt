@@ -5,6 +5,7 @@ sudo: false
 
 python:
   - 2.7
+  - 3.5
 
 env:
   - CONDA_DEPS="pip pytest nose numpy scipy" PIP_DEPS="coveralls"

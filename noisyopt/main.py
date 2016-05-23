@@ -59,8 +59,8 @@ except:
 def minimize(func, x0, args=(),
             bounds=None, scaling=None,
             redfactor=2.0, deltainit=1.0, deltatol=1e-3, feps=1e-15,
-            errorcontrol=False, funcNinit=30, funcmultfactor=2.0,
-            paired=False, alpha=0.05, disp=False, **kwargs):
+            errorcontrol=True, funcNinit=30, funcmultfactor=2.0,
+            paired=True, alpha=0.05, disp=False, callback=None, **kwargs):
     """
     Minimization of an objective function by a pattern search.
 
@@ -103,6 +103,10 @@ def minimize(func, x0, args=(),
         significance level of tests, the higher this value the more statistics
         is acquired, which decreases the risk of taking a step in a non-descent
         direction at the expense of higher computational cost per iteration
+    disp: boolean
+        whether to output status updates during the optimization
+    callback: callable
+        called after each iteration, as callback(xk), where xk is the current parameter vector.
 
     Returns
     -------
@@ -111,10 +115,10 @@ def minimize(func, x0, args=(),
         Boolean array indicating whether the variable is free (within feps) at the optimum
     """
     if disp:
-        print 'minimization starting'
-        print 'args', args
-        print 'errorcontrol', errorcontrol
-        print 'paired', paired
+        print('minimization starting')
+        print('args', args)
+        print('errorcontrol', errorcontrol)
+        print('paired', paired)
     # absolute tolerance for float comparisons
     floatcompatol = 1e-14
     x0 = np.asarray(x0)
@@ -172,7 +176,7 @@ def minimize(func, x0, args=(),
         if delta/redfactor < deltatol:
             delta = deltatol
         if disp:
-            print 'nit %i, Delta %g' % (nit, delta)
+            print('nit %i, Delta %g' % (nit, delta))
         found = False
         np.random.shuffle(generatingset)
         for d in generatingset:
@@ -186,7 +190,7 @@ def minimize(func, x0, args=(),
                 x = xtest
                 found = True
                 if disp:
-                    print x
+                    print(x)
             # Is non-improvement due to too large step size or missing statistics?
             elif ((deltaeff >= deltatol*np.sum(np.abs(d))) # no refinement for boundary steps smaller than tolerance
                     and ((not errorcontrol and (funcm(xtest) < funcm(x)+feps))
@@ -204,13 +208,15 @@ def minimize(func, x0, args=(),
                     delta /= redfactor
                     found = True
                     if disp:
-                        print 'mid', x
+                        print('mid', x)
                 # otherwise increase accuracy of simulation to try to get to significance
                 elif errorcontrol:
                     funcm.N *= funcmultfactor
                     if disp:
-                        print 'new N %i' % funcm.N
+                        print('new N %i' % funcm.N)
                     found = True
+        if callback is not None:
+            callback(x)
         if not found:
             delta /= redfactor
 
@@ -238,10 +244,12 @@ def minimize(func, x0, args=(),
         f = funcm(x)
         res = OptimizeResult(fun=f, **reskwargs)
     if disp:
-        print res
+        print(res)
     return res
 
-def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=False, a=1.0, c=1.0, disp=False):
+def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True,
+                 a=1.0, c=1.0,
+                 disp=False, callback=None):
     """
     Minimization of an objective function by a simultaneous perturbation
     stochastic approximation algorithm.
@@ -262,8 +270,14 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=False, a=1.0,
         maximum number of iterations of the algorithm
     paired: boolean
         calculate gradient for same random seeds
-    a, c : float
-        algorithm scaling parameter
+    a: float
+       algorithm scaling parameter for step size
+    c: float
+       algorithm scaling parameter for evaluation step size
+    disp: boolean
+        whether to output status updates during the optimization
+    callback: callable
+        called after each iteration, as callback(xk), where xk is the current parameter vector.
 
     Returns
     -------
@@ -276,7 +290,13 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=False, a=1.0,
     if bounds is None:
         project = lambda x: x
     else:
+        bounds = np.asarray(bounds)
         project = lambda x: np.clip(x, bounds[:, 0], bounds[:, 1])
+
+    if args is not None:
+        # freeze function arguments
+        def funcf(x, **kwargs):
+            return func(x, *args, **kwargs)
 
     N = len(x0)
     x = x0
@@ -286,13 +306,16 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=False, a=1.0,
         delta = np.random.choice([-1, 1], size=N)
         fkwargs = dict()
         if paired:
-            fkwargs['seed'] = np.random.randint(0, self.uint32max, size=N)
-        grad = (func(x + ck*delta, **fkwargs) - func(x - ck*delta, **fkwargs)) / (2*ck*delta)
+            fkwargs['seed'] = np.random.randint(0, np.iinfo(np.uint32).max, size=N)
+        grad = (funcf(x + ck*delta, **fkwargs) - funcf(x - ck*delta, **fkwargs)) / (2*ck*delta)
         x = project(x - ak*grad)
-        if disp:
-            print x
+        # print 100 status updates if disp=True
+        if disp and (k % (niter//100)) == 0:
+            print(x)
+        if callback is not None:
+            callback(x)
     message = 'terminated after reaching max number of iterations'
-    return OptimizeResult(fun=func(x), x=x, nit=niter, nfev=2*niter, message=message, success=True)
+    return OptimizeResult(fun=funcf(x), x=x, nit=niter, nfev=2*niter, message=message, success=True)
 
 class AverageBase(object):
     """
@@ -517,7 +540,7 @@ class DifferenceFunction(AverageBase):
 class BisectException(Exception):
     pass
 
-def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
+def bisect(func, a, b, xtol=1e-6, errorcontrol=True,
            testkwargs=dict(), outside='extrapolate',
            ascending=None,
            disp=False):
@@ -567,7 +590,7 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
             ascending =  False
         else:
             if disp:
-                print 'Warning: func(a) and func(b) do not have opposing signs -> no search done'
+                print('Warning: func(a) and func(b) do not have opposing signs -> no search done')
             if outside == 'raise':
                 raise BisectException()
             search = False
@@ -588,7 +611,7 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
             else:
                 a = mid
         if disp:
-            print 'bisect bounds', a, b
+            print('bisect bounds', a, b)
     # interpolate linearly to get zero
     if errorcontrol:
         ya, yb = func(a)[0], func(b)[0]
@@ -597,15 +620,19 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=False,
     m = (yb-ya) / (b-a)
     res = a-ya/m
     if disp:
-        print 'bisect final value', res
+        print('bisect final value', res)
     return res
 
 class memoized(object):
     """Decorator. Caches a function's return value each time it is called.
+
     If called later with the same arguments, the cached value is returned
     (not reevaluated).
-    
     Can be turned of by passing `memoize=False` when calling the function.
+
+    If the function arguments are not hashable, then no caching is attempted
+    and the function is evaluated at every call. An error can instead be raised
+    by passing `nothashable=raise` when calling the function.
     """
     def __init__(self, func):
         self.func = func
@@ -616,13 +643,19 @@ class memoized(object):
         # if args is not Hashable we can't cache
         # easier to ask for forgiveness than permission
         memoize = kwargs.pop('memoize', True)
+        nothashable = kwargs.pop('nothashable', 'ignore')
         if memoize:
             try:
                 index = ()
                 for arg in args:
-                    index += tuple(arg)
+                    # unwrap iterable arguments
+                    # (needed e.g. for np.ndarray which is not hashable)
+                    try:
+                        index += tuple(arg)
+                    except TypeError:
+                        index += (arg, ) 
                 # try to also recompute if kwargs changed
-                for item in kwargs.itervalues():
+                for item in kwargs.values():
                     try:
                         index += (float(item), )
                     except:
@@ -635,9 +668,12 @@ class memoized(object):
                     self.cache[index] = value
                     return value
             except TypeError:
-                print 'not hashable', args
-                self.nev += 1
-                return self.func(*args, **kwargs)
+                if nothashable == 'raise':
+                    raise TypeError('Not hashable: %s' % str(args))
+                else:
+                    print('not hashable', args)
+                    self.nev += 1
+                    return self.func(*args, **kwargs)
         else:
             self.nev += 1
             return self.func(*args, **kwargs)
