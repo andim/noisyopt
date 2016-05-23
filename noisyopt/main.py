@@ -279,6 +279,11 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True, a=1.0, 
         bounds = np.asarray(bounds)
         project = lambda x: np.clip(x, bounds[:, 0], bounds[:, 1])
 
+    if args is not None:
+        # freeze function arguments
+        def funcf(x, **kwargs):
+            return func(x, *args, **kwargs)
+
     N = len(x0)
     x = x0
     for k in range(niter):
@@ -288,13 +293,13 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True, a=1.0, 
         fkwargs = dict()
         if paired:
             fkwargs['seed'] = np.random.randint(0, np.iinfo(np.uint32).max, size=N)
-        grad = (func(x + ck*delta, **fkwargs) - func(x - ck*delta, **fkwargs)) / (2*ck*delta)
+        grad = (funcf(x + ck*delta, **fkwargs) - funcf(x - ck*delta, **fkwargs)) / (2*ck*delta)
         x = project(x - ak*grad)
         # print 100 status updates if disp=True
         if disp and (k % (niter//100)) == 0:
             print(x)
     message = 'terminated after reaching max number of iterations'
-    return OptimizeResult(fun=func(x), x=x, nit=niter, nfev=2*niter, message=message, success=True)
+    return OptimizeResult(fun=funcf(x), x=x, nit=niter, nfev=2*niter, message=message, success=True)
 
 class AverageBase(object):
     """

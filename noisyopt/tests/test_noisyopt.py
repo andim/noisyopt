@@ -38,6 +38,14 @@ def test_minimize():
     npt.assert_allclose(res.x, [0.5, 0.5], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
+    ## test args passing
+    def quadratic_factor(x, factor):
+        return factor*(x**2).sum()
+
+    res = noisyopt.minimize(quadratic_factor, np.asarray([0.5, 1.0]),
+                            paired=False, args=(1.0,))
+    npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
+
 
     ## test determination of unconstrained variables
     def quadratic_except_last(x):
@@ -68,7 +76,6 @@ def test_minimize():
     npt.assert_equal(res.free, [False, False])
 
 def test_minimizeSPSA():
-
     deltatol = 0.25
 
     ## basic testing without stochasticity
@@ -95,6 +102,13 @@ def test_minimizeSPSA():
                             paired=False)
     npt.assert_allclose(res.x, [0.5, 0.5], atol=deltatol)
 
+    # test args passing
+    def quadratic_factor(x, factor):
+        return factor*(x**2).sum()
+
+    res = noisyopt.minimizeSPSA(quadratic_factor, np.asarray([0.5, 1.0]),
+                                paired=False, args=(1.0,))
+    npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
 
     ## test errorcontrol for stochastic function
     def stochastic_quadratic(x, seed=None):
