@@ -60,7 +60,7 @@ def minimize(func, x0, args=(),
             bounds=None, scaling=None,
             redfactor=2.0, deltainit=1.0, deltatol=1e-3, feps=1e-15,
             errorcontrol=True, funcNinit=30, funcmultfactor=2.0,
-            paired=True, alpha=0.05, disp=False, **kwargs):
+            paired=True, alpha=0.05, disp=False, callback=None, **kwargs):
     """
     Minimization of an objective function by a pattern search.
 
@@ -103,6 +103,10 @@ def minimize(func, x0, args=(),
         significance level of tests, the higher this value the more statistics
         is acquired, which decreases the risk of taking a step in a non-descent
         direction at the expense of higher computational cost per iteration
+    disp: boolean
+        whether to output status updates during the optimization
+    callback: callable
+        called after each iteration, as callback(xk), where xk is the current parameter vector.
 
     Returns
     -------
@@ -211,6 +215,8 @@ def minimize(func, x0, args=(),
                     if disp:
                         print('new N %i' % funcm.N)
                     found = True
+        if callback is not None:
+            callback(x)
         if not found:
             delta /= redfactor
 
@@ -241,7 +247,9 @@ def minimize(func, x0, args=(),
         print(res)
     return res
 
-def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True, a=1.0, c=1.0, disp=False):
+def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True,
+                 a=1.0, c=1.0,
+                 disp=False, callback=None):
     """
     Minimization of an objective function by a simultaneous perturbation
     stochastic approximation algorithm.
@@ -262,8 +270,14 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True, a=1.0, 
         maximum number of iterations of the algorithm
     paired: boolean
         calculate gradient for same random seeds
-    a, c : float
-        algorithm scaling parameter
+    a: float
+       algorithm scaling parameter for step size
+    c: float
+       algorithm scaling parameter for evaluation step size
+    disp: boolean
+        whether to output status updates during the optimization
+    callback: callable
+        called after each iteration, as callback(xk), where xk is the current parameter vector.
 
     Returns
     -------
@@ -298,6 +312,8 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True, a=1.0, 
         # print 100 status updates if disp=True
         if disp and (k % (niter//100)) == 0:
             print(x)
+        if callback is not None:
+            callback(x)
     message = 'terminated after reaching max number of iterations'
     return OptimizeResult(fun=funcf(x), x=x, nit=niter, nfev=2*niter, message=message, success=True)
 
