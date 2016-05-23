@@ -30,10 +30,11 @@ To see how to install the package, please refer to the `README file
 <https://github.com/andim/noisyopt/blob/master/README.md>`_ in the Github repository.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    tutorial
    reference/index
+   changelog
 
 Further reading
 ---------------
