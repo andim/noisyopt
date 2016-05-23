@@ -117,8 +117,9 @@ def test_minimizeSPSA():
 
     # test unpaired
     res = noisyopt.minimizeSPSA(stochastic_quadratic, np.array([4.55, 3.0]),
-                            paired=False)
+                                paired=False, niter=500)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
+
     # test paired
     res = noisyopt.minimizeSPSA(stochastic_quadratic, np.array([4.55, 3.0]),
                             paired=True)
