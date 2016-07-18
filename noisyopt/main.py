@@ -411,23 +411,17 @@ class AveragedFunction(AverageBase):
         except TypeError:
             # if TypeError then likely floating point value
             xt = (x, )
-        if xt in self.cache:
-            Nold = len(self.cache[xt])
-            if Nold < self.N:
-                Nadd = self.N - Nold 
-                if self.paired:
-                    values = [self.func(x, seed=self.seeds[Nold+i]) for i in range(Nadd)]
-                else:
-                    values = [self.func(x) for i in range(Nadd)]
-                self.cache[xt].extend(values)
-                self.nev += Nadd
+        Nold = len(self.cache.setdefault(xt, []))
+        Nadd = max(0, self.N - Nold)
+        if self.paired:
+            values = [self.func(x, seed=self.seeds[Nold+i],
+                                loop_idx=i, loop_limit=Nadd)
+                      for i in xrange(Nadd)]
         else:
-            if self.paired:
-                values = [self.func(x, seed=self.seeds[i]) for i in range(self.N)]
-            else:
-                values = [self.func(x) for i in range(self.N)]
-            self.cache[xt] = values 
-            self.nev += self.N
+            values = [self.func(x, loop_idx=i, loop_limit=Nadd)
+                      for i in xrange(Nadd)]
+        self.cache[xt].extend(values)
+        self.nev += Nadd
         return np.mean(self.cache[xt]), np.std(self.cache[xt], ddof=1)/self.N**.5
 
     def diffse(self, x1, x2):
