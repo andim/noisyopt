@@ -306,8 +306,14 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True,
         delta = np.random.choice([-1, 1], size=N)
         fkwargs = dict()
         if paired:
-            fkwargs['seed'] = np.random.randint(0, np.iinfo(np.uint32).max, size=N)
-        grad = (funcf(x + ck*delta, **fkwargs) - funcf(x - ck*delta, **fkwargs)) / (2*ck*delta)
+            fkwargs['seed'] = np.random.randint(0, np.iinfo(np.uint32).max)
+        if bounds is None:
+            grad = (funcf(x + ck*delta, **fkwargs) - funcf(x - ck*delta, **fkwargs)) / (2*ck*delta)
+        else:
+            # ensure evaluation points are feasible
+            xplus = project(x + ck*delta)
+            xminus = project(x - ck*delta)
+            grad = (funcf(xplus, **fkwargs) - funcf(xminus, **fkwargs)) / (xplus-xminus)
         x = project(x - ak*grad)
         # print 100 status updates if disp=True
         if disp and (k % (niter//100)) == 0:
