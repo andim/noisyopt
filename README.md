@@ -11,6 +11,7 @@ Python package for local optimization of noisy functions.
 Currently variants of the following algorithms are implemented:
 - pattern search with adaptive sampling
 - stochastic approximation algorithm 
+
 Both allow having bound constraints on variables.
 
 
@@ -22,12 +23,14 @@ Alternatively you can install it from source by obtaining the source code from [
 
 ## Documentation
 
-You can access the documentation online at [Read the docs](http://noisyopt.readthedocs.io/en/latest/) or if you install from source generate a local version by running `make html` from the `doc` directory.
+You can access the documentation online at [Read the docs](http://noisyopt.readthedocs.io/en/latest/). If you install from source you can generate a local version by running `make html` from the `doc` directory.
 
 ## Testing
 
 You can run the testsuite using the py.test testing framework `py.test`.
 
-## Contributing
+## Support and contributing
 
 For bug reports and enhancement requests use the [Github issue tool](http://github.com/andim/noisyopt/issues/new), or (even better!) open a [pull request](http://github.com/andim/noisyopt/pulls) with relevant changes. If you have any questions don't hesitate to contact me by email (andisspam@gmail.com) or Twitter ([@andisspam](http://twitter.com/andisspam)).
+
+You are cordially invited to [contribute](https://github.com/andim/noisyopt/blob/master/CONTRIBUTING.md) to the further development of noisyopt!
