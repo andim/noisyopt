@@ -6,7 +6,13 @@
 
 # noisyopt
 
-Python package for local optimization of noisy functions using a pattern search algorithm with adaptive sampling.
+Python package for local optimization of noisy functions.
+
+Currently variants of the following algorithms are implemented:
+- pattern search with adaptive sampling
+- stochastic approximation algorithm 
+Both allow having bound constraints on variables.
+
 
 ## Installation
 
