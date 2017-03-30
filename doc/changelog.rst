@@ -5,7 +5,7 @@ Release history
 ===
 
 * renamed minimize to minimizeCompass for clarity
-* only feasible evaluations of with SPSA algorithm
+* SPSA algorithm now only uses feasible evaluations
 * improved documentation
 
 0.1.1
