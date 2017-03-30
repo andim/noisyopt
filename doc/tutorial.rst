@@ -62,3 +62,9 @@ optimum, ``res.fun``::
            x: array([-0.05,  0.5 ])
      message: 'convergence within deltatol'
          nit: 10
+
+Further examples
+----------------
+
+A usage example on a real-world problem can be found at http://github.com/andim/evolimmune/ including using the :py:func:`noisyopt.bysect` `routine <https://github.com/andim/evolimmune/blob/master/fig2/run_phases.py>`_.
+

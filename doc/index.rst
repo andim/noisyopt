@@ -43,5 +43,5 @@ Further reading
 
 If you use and like this package, you might want to read and cite the papers describing the implemented algorithms:
 
-.. [Mayer2016] Mayer, A.; Mora, T.; Rivoire, O. & Walczak, A. M. Diversity of immune strategies explained by adaptation to pathogen statistics. PNAS, 2016. Relevant section is in the Supplementary Information entitled "Pattern-search based optimization for problems with noisy function evaluations".
+.. [Mayer2016] Mayer, A.; Mora, T.; Rivoire, O. & Walczak, A. M. Diversity of immune strategies explained by adaptation to pathogen statistics. PNAS, 2016, 113(31), 8630-8635. Relevant section is in the Supplementary Information entitled "Pattern-search based optimization for problems with noisy function evaluations".
 .. [Spall1998] Spall, JC. Implementation of the simultaneous perturbation algorithm for stochastic optimization. Aerospace and Electronic Systems, IEEE Transactions on, IEEE, 1998, 34, 817-823 
