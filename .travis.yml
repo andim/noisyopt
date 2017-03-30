@@ -26,6 +26,7 @@ before_install:
   else
     wget http://repo.continuum.io/miniconda/Miniconda3-3.4.2-Linux-x86_64.sh -O miniconda.sh;
   fi
+- bash miniconda.sh -b -f -p $MINICONDA
 - conda config --set always_yes yes
 - conda update conda
 - conda info -a
