@@ -88,7 +88,8 @@ def test_minimizeSPSA():
     res = noisyopt.minimizeSPSA(quadratic, np.asarray([2.5, -3.2]), paired=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
 
-    res = noisyopt.minimizeSPSA(quadratic, np.asarray([2.5, -3.2, 0.9, 10.0, -0.3]), paired=False)
+    res = noisyopt.minimizeSPSA(quadratic, np.asarray([2.5, -3.2, 0.9, 10.0, -0.3]),
+                                niter=1000, paired=False)
     npt.assert_allclose(res.x, np.zeros(5), atol=deltatol)
 
     ## test bound handling
