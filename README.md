@@ -4,6 +4,9 @@
 [![Build Status](https://travis-ci.org/andim/noisyopt.svg?branch=master)](https://travis-ci.org/andim/noisyopt)
 [![Documentation Status](https://readthedocs.org/projects/noisyopt/badge/?version=latest)](https://noisyopt.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/andim/noisyopt/badge.svg?branch=master)](https://coveralls.io/github/andim/noisyopt?branch=master)
+[![DOI](https://zenodo.org/badge/54976198.svg)](https://zenodo.org/badge/latestdoi/54976198)
+
+
 
 # noisyopt
 
