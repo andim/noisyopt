@@ -13,6 +13,12 @@ def test_minimizeCompass():
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
+    # test with output
+    res = noisyopt.minimizeCompass(quadratic, np.asarray([0.5, 1.0]), deltatol=deltatol,
+                            errorcontrol=False, disp=True)
+    npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
+    npt.assert_equal(res.free, [False, False])
+
     res = noisyopt.minimizeCompass(quadratic, np.asarray([2.5, -3.2]), deltatol=deltatol,
                             errorcontrol=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
@@ -83,6 +89,10 @@ def test_minimizeSPSA():
         return (x**2).sum()
 
     res = noisyopt.minimizeSPSA(quadratic, np.asarray([0.5, 1.0]), paired=False)
+    npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
+
+    # test with output
+    res = noisyopt.minimizeSPSA(quadratic, np.asarray([0.5, 1.0]), paired=False, disp=True)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
 
     res = noisyopt.minimizeSPSA(quadratic, np.asarray([2.5, -3.2]), paired=False)
