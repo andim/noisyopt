@@ -1,6 +1,13 @@
 Release history
 ###############
 
+0.2
+===
+
+* renamed minimize to minimizeCompass
+* only feasible evaluations of with SPSA algorithm
+* updates to the documentation
+
 0.1.1
 =====
 
