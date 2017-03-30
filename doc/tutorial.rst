@@ -24,10 +24,10 @@ to some noisy approximation.
 This is obviously a toy example (the solution (0.0, 0.5) is obvious from
 inspection of the problem), but similar problems arise in practice.
     
-First we need to import the ``minimize`` function from the `noisyopt` package::
+First we need to import the ``minimizeCompass`` function from the `noisyopt` package::
 
   >>> import numpy as np
-  >>> from noisyopt import minimize
+  >>> from noisyopt import minimizeCompass
 
 Then we need to define the objective of the function::
 
@@ -42,14 +42,14 @@ And we define the initial guess::
 
   >>> x0 = np.array([-2.0, 2.0])
                
-The pattern search based optimization algorithm is called using the ``minimize`` function. The `minimize` functions accepts the problem objective ``obj`` and block constraints::
+The pattern search based optimization algorithm is called using the ``minimizeCompass`` function. The `minimizeCompass` functions accepts the problem objective ``obj`` and block constraints::
 
-  >>> res = minimize(obj, bounds=bounds, x0=x0, deltatol=0.1)
+  >>> res = minimizeCompass(obj, bounds=bounds, x0=x0, deltatol=0.1)
 
 It is possible to further customize the algorithm using the parameters of
-the ``minimize`` function (see :py:func:`noisyopt.minimize`). Alternatively we can also try a different algorithm implementing a simultaneous perturbation stochastic approximation algorithm (see :py:func:`noisyopt.minimizeSPSA`).
+the ``minimizeCompass`` function (see :py:func:`noisyopt.minimizeCompass`). Alternatively we can also try a different algorithm implementing a simultaneous perturbation stochastic approximation algorithm (see :py:func:`noisyopt.minimizeSPSA`).
 
-The ``minimize`` function returns a result object ``res`` making accessible among 
+The ``minimizeCompass`` function returns a result object ``res`` making accessible among 
 other the optimal point, ``res.x``, and the value of the objective at the
 optimum, ``res.fun``::
 
