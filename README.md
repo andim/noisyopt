@@ -10,7 +10,7 @@ Python library for optimization of noisy functions.
 
 Currently variants of the following algorithms are implemented:
 - pattern search with adaptive sampling
-- stochastic approximation algorithm 
+- simultaneous perturbation stochastic approximation
 
 Both allow having bound constraints on variables.
 
