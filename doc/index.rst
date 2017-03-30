@@ -35,7 +35,7 @@ To see how to install the package, please refer to the `README file
    :maxdepth: 1
 
    tutorial
-   reference/index
+   api
    changelog
 
 Further reading

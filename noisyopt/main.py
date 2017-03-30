@@ -161,7 +161,7 @@ def minimizeCompass(func, x0, args=(),
         # freeze function arguments
         def funcf(x, **kwargs):
             return func(x, *args, **kwargs)
-        funcm = memoized(funcf)
+        funcm = _memoized(funcf)
 
     x = x0 
     delta = deltainit
@@ -633,7 +633,7 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=True,
         print('bisect final value', res)
     return res
 
-class memoized(object):
+class _memoized(object):
     """Decorator. Caches a function's return value each time it is called.
 
     If called later with the same arguments, the cached value is returned
