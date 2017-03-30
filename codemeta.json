@@ -1,0 +1,17 @@
+{
+  "@context": "https://raw.githubusercontent.com/mbjones/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+
+  ],
+  "identifier": "https://doi.org/10.5281/zenodo.439144",
+  "codeRepository": "https://github.com/andim/noisyopt",
+  "datePublished": "2017-03-30",
+  "dateModified": "2017-03-30",
+  "dateCreated": "2017-03-30",
+  "description": "Noisyopt is a Python library for local optimization of functions based on noisy evaluations.",
+  "keywords": "optimization, stochastic approximation, spsa",
+  "license": "MIT",
+  "title": "noisyopt",
+  "version": "v0.2.0"
+}
