@@ -15,7 +15,7 @@ python:
 - 3.5
 
 env:
-- CONDA_DEPS="pip pytest nose" PIP_DEPS="coverage coveralls"
+- CONDA_DEPS="pip pytest pytest-cov" PIP_DEPS="coveralls"
 
 before_install:
 - export MINICONDA=$HOME/miniconda
@@ -38,8 +38,7 @@ install:
 - python setup.py install --record installed_files.txt
 
 script:
-- py.test
-- coverage run --source=noisyopt noisyopt/tests/test_noisyopt.py
+- py.test --cov noisyopt
 
 after_success:
 - coveralls

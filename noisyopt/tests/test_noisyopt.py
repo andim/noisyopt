@@ -76,7 +76,7 @@ def test_minimizeCompass():
     npt.assert_equal(res.free, [False, False])
 
 def test_minimizeSPSA():
-    deltatol = 0.25
+    deltatol = 1.0
 
     ## basic testing without stochasticity
     def quadratic(x):
