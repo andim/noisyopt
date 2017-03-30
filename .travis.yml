@@ -11,7 +11,7 @@ python:
 - 2.7
 - 3.5
 env:
-- CONDA_DEPS="pip pytest nose numpy scipy" PIP_DEPS="coveralls"
+- CONDA_DEPS="pip pytest nose" PIP_DEPS="coveralls"
 before_install:
 - export MINICONDA=$HOME/miniconda
 - export PATH="$MINICONDA/bin:$PATH"
@@ -23,6 +23,7 @@ before_install:
 - conda info -a
 install:
 - conda install --yes python=$TRAVIS_PYTHON_VERSION $CONDA_DEPS
+- conda install --yes python=$TRAVIS_PYTHON_VERSION --file requirements.txt
 - travis_retry pip install $PIP_DEPS
 - python setup.py install --record installed_files.txt
 script:
