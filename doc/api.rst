@@ -29,3 +29,16 @@ bisect
 .. autofunction:: bisect
 
 
+Average classes
+~~~~~~~~~~~~~~~
+
+These helper classes perform averages over function values. They provide extra logic such as tests whether function values differ signficantly.
+
+.. autoclass:: AverageBase
+    :members:
+.. autoclass:: AveragedFunction
+    :members:
+    :inherited-members:
+.. autoclass:: DifferenceFunction
+    :members:
+    :inherited-members:
