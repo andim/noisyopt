@@ -15,7 +15,7 @@ python:
 - 3.5
 
 env:
-- CONDA_DEPS="pip pytest pytest-cov" PIP_DEPS="coveralls"
+- CONDA_DEPS="pip pytest nose pytest-cov" PIP_DEPS="coveralls"
 
 before_install:
 - export MINICONDA=$HOME/miniconda
