@@ -2,36 +2,36 @@ import numpy as np
 import numpy.testing as npt
 import noisyopt
 
-def test_minimize():
+def test_minimizeCompass():
     deltatol = 1e-3
     ## basic testing without stochasticity
     def quadratic(x):
         return (x**2).sum()
 
-    res = noisyopt.minimize(quadratic, np.asarray([0.5, 1.0]), deltatol=deltatol,
+    res = noisyopt.minimizeCompass(quadratic, np.asarray([0.5, 1.0]), deltatol=deltatol,
                             errorcontrol=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
-    res = noisyopt.minimize(quadratic, np.asarray([2.5, -3.2]), deltatol=deltatol,
+    res = noisyopt.minimizeCompass(quadratic, np.asarray([2.5, -3.2]), deltatol=deltatol,
                             errorcontrol=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
-    res = noisyopt.minimize(quadratic, np.asarray([2.5, -3.2, 0.9, 10.0, -0.3]),
+    res = noisyopt.minimizeCompass(quadratic, np.asarray([2.5, -3.2, 0.9, 10.0, -0.3]),
                             deltatol=deltatol, errorcontrol=False)
     npt.assert_allclose(res.x, np.zeros(5), atol=deltatol)
     npt.assert_equal(res.free, [False, False, False, False, False])
 
     ## test bound handling
-    res = noisyopt.minimize(quadratic, np.asarray([0.5, 0.5]),
+    res = noisyopt.minimizeCompass(quadratic, np.asarray([0.5, 0.5]),
                             bounds=np.asarray([[0, 1], [0, 1]]),
                             deltatol=deltatol,
                             errorcontrol=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
-    res = noisyopt.minimize(quadratic, np.asarray([0.8, 0.8]),
+    res = noisyopt.minimizeCompass(quadratic, np.asarray([0.8, 0.8]),
                             bounds=np.asarray([[0.5, 1], [0.5, 1]]),
                             deltatol=deltatol,
                             errorcontrol=False)
@@ -42,7 +42,7 @@ def test_minimize():
     def quadratic_factor(x, factor):
         return factor*(x**2).sum()
 
-    res = noisyopt.minimize(quadratic_factor, np.asarray([0.5, 1.0]),
+    res = noisyopt.minimizeCompass(quadratic_factor, np.asarray([0.5, 1.0]),
                             paired=False, args=(1.0,))
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
 
@@ -51,7 +51,7 @@ def test_minimize():
     def quadratic_except_last(x):
         return (x[:-1]**2).sum()
 
-    res = noisyopt.minimize(quadratic_except_last, np.asarray([0.5, 1.0]),
+    res = noisyopt.minimizeCompass(quadratic_except_last, np.asarray([0.5, 1.0]),
                             errorcontrol=False)
     npt.assert_approx_equal(res.x[0], 0.0)
     npt.assert_equal(res.free, [False, True])
@@ -63,13 +63,13 @@ def test_minimize():
 
     deltatol = 0.5
     # test unpaired
-    res = noisyopt.minimize(stochastic_quadratic, np.array([4.55, 3.0]),
+    res = noisyopt.minimizeCompass(stochastic_quadratic, np.array([4.55, 3.0]),
                             deltainit=2.0, deltatol=deltatol,
                             errorcontrol=True, paired=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
     # test paired
-    res = noisyopt.minimize(stochastic_quadratic, np.array([4.55, 3.0]),
+    res = noisyopt.minimizeCompass(stochastic_quadratic, np.array([4.55, 3.0]),
                             deltainit=2.0, deltatol=deltatol,
                             errorcontrol=True, paired=True)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)

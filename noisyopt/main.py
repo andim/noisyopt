@@ -54,9 +54,8 @@ except:
             else:
                 return self.__class__.__name__ + "()"
 
-#TODO: implement variable deltas for different directions (might speed up things, see review)
 
-def minimize(func, x0, args=(),
+def minimizeCompass(func, x0, args=(),
             bounds=None, scaling=None,
             redfactor=2.0, deltainit=1.0, deltatol=1e-3, feps=1e-15,
             errorcontrol=True, funcNinit=30, funcmultfactor=2.0,
@@ -114,6 +113,7 @@ def minimize(func, x0, args=(),
         special entry: free
         Boolean array indicating whether the variable is free (within feps) at the optimum
     """
+    #TODO: implement variable deltas for different directions (might speed up things, see review)
     if disp:
         print('minimization starting')
         print('args', args)
@@ -246,6 +246,10 @@ def minimize(func, x0, args=(),
     if disp:
         print(res)
     return res
+
+def minimize(*args, **kwargs):
+    "deprecated: use minimizeCompass instead"
+    return minimizeCompass(*args, **kwargs)
 
 def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True,
                  a=1.0, c=1.0,
