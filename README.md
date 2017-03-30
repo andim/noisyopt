@@ -3,6 +3,7 @@
 [![Latest release](https://img.shields.io/pypi/v/noisyopt.svg)](https://pypi.python.org/pypi/noisyopt)
 [![Build Status](https://travis-ci.org/andim/noisyopt.svg?branch=master)](https://travis-ci.org/andim/noisyopt)
 [![Documentation Status](https://readthedocs.org/projects/noisyopt/badge/?version=latest)](https://noisyopt.readthedocs.io/en/latest/?badge=latest)
+[![Coverage Status](https://coveralls.io/repos/github/andim/noisyopt/badge.svg?branch=master)](https://coveralls.io/github/andim/noisyopt?branch=master)
 
 # noisyopt
 
@@ -12,8 +13,7 @@ Currently variants of the following algorithms are implemented:
 - pattern search with adaptive sampling
 - simultaneous perturbation stochastic approximation
 
-Both allow having bound constraints on variables.
-
+Optionally bound constraints on variables are possible.
 
 ## Installation
 
