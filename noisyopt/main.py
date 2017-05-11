@@ -72,7 +72,9 @@ def minimizeCompass(func, x0, args=(),
     Parameters
     ----------
     func: callable
-        objective function to be minimized
+        objective function to be minimized:
+        called as func(x, *args, **kwargs),
+        if paired=True, then called with keyword argument `seed` additionally
     x0: array-like
         starting point
     args: tuple
@@ -111,7 +113,7 @@ def minimizeCompass(func, x0, args=(),
     -------
     scipy.optimize.OptimizeResult object
         special entry: free
-        Boolean array indicating whether the variable is free (within feps) at the optimum
+        Boolean array indicating parameters that are unconstrained at the optimum (within feps) 
     """
     #TODO: implement variable deltas for different directions (might speed up things, see review)
     if disp:
