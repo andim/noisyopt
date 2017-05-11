@@ -5,7 +5,7 @@ import numpy as np
 from noisyopt import minimizeCompass
 
 def obj(x):
-    return (x**2).sum() + 0.1*np.random.randn(1)
+    return (x**2).sum() + 0.1*np.random.randn()
 
 bounds = [[-3.0, 3.0], [0.5, 5.0]]
 x0 = np.array([-2.0, 2.0])
