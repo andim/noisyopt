@@ -1,6 +1,10 @@
 Release history
 ###############
 
+0.2.1
+=====
+* setup.py installation requirements fixed
+
 0.2
 ===
 
