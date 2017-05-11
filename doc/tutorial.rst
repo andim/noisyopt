@@ -32,7 +32,7 @@ First we need to import the ``minimizeCompass`` function from the `noisyopt` pac
 Then we need to define the objective of the function::
 
   >>> def obj(x):
-    ...     return (x**2).sum() + 0.1*np.random.randn(1)
+    ...     return (x**2).sum() + 0.1*np.random.randn()
 
 We now define the domain of the problem using bound constraints::
 
