@@ -73,8 +73,8 @@ def minimizeCompass(func, x0, args=(),
     ----------
     func: callable
         objective function to be minimized:
-        called as func(x, *args, **kwargs),
-        if paired=True, then called with keyword argument `seed` additionally
+        called as `func(x, *args, **kwargs)`,
+        if `paired=True`, then called with keyword argument `seed` additionally
     x0: array-like
         starting point
     args: tuple
