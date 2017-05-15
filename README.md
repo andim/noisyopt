@@ -1,7 +1,7 @@
 [![License](https://img.shields.io/pypi/l/noisyopt.svg)](https://github.com/andim/noisyopt/blob/master/LICENSE)
 [![Latest release](https://img.shields.io/pypi/v/noisyopt.svg)](https://pypi.python.org/pypi/noisyopt)
-![Py2.7](https://img.shields.io/badge/python-2.7-blue.svg)
-![Py3.5](https://img.shields.io/badge/python-3.5-blue.svg)
+![Py2.7/3.x](https://img.shields.io/pypi/pyversions/noisyopt.svg)
+[![JOSS](http://joss.theoj.org/papers/4d17c8d6e2cfe6505ca5ccdace5e123b/status.svg)](http://joss.theoj.org/papers/4d17c8d6e2cfe6505ca5ccdace5e123b)
 [![DOI](https://zenodo.org/badge/54976198.svg)](https://zenodo.org/badge/latestdoi/54976198)
 
 ![Status](https://img.shields.io/pypi/status/noisyopt.svg)
