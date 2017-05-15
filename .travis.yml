@@ -13,6 +13,7 @@ deploy:
 python:
 - 2.7
 - 3.5
+- 3.6
 
 env:
 - CONDA_DEPS="pip pytest nose pytest-cov" PIP_DEPS="coveralls"
