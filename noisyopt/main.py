@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from scipy import stats
 
 # include OptimizeResult class for machines on which scipy version is too old
@@ -251,6 +252,8 @@ def minimizeCompass(func, x0, args=(),
 
 def minimize(*args, **kwargs):
     "deprecated: use minimizeCompass instead"
+    warnings.warn("This function will be deprecated in version 1.0. Use minimizeCompass instead",
+                  PendingDeprecationWarning)
     return minimizeCompass(*args, **kwargs)
 
 def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True,
