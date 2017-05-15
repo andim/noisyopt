@@ -13,6 +13,12 @@ def test_minimizeCompass():
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
+    # test with callback
+    def callback(x):
+        assert len(x) == 2
+    res = noisyopt.minimizeCompass(quadratic, np.asarray([0.5, 1.0]), deltatol=deltatol,
+                            errorcontrol=False, callback=callback)
+
     # test with output
     res = noisyopt.minimizeCompass(quadratic, np.asarray([0.5, 1.0]), deltatol=deltatol,
                             errorcontrol=False, disp=True)
@@ -91,6 +97,12 @@ def test_minimizeSPSA():
     res = noisyopt.minimizeSPSA(quadratic, np.asarray([0.5, 1.0]), paired=False)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
 
+    # test with callback
+    def callback(x):
+        assert len(x) == 2
+    res = noisyopt.minimizeSPSA(quadratic, np.asarray([0.5, 1.0]), paired=False,
+                                callback=callback)
+
     # test with output
     res = noisyopt.minimizeSPSA(quadratic, np.asarray([0.5, 1.0]), paired=False, disp=True)
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
@@ -140,6 +152,7 @@ def test_bisect():
     xtol = 1e-6 
 
     ## simple tests
+    # ascending
     root = noisyopt.bisect(lambda x: x, -2, 2, xtol=xtol,
                            errorcontrol=False)
     npt.assert_allclose(root, 0.0, atol=xtol)
@@ -147,6 +160,11 @@ def test_bisect():
     root = noisyopt.bisect(lambda x: x-1, -2, 2, xtol=xtol,
                            errorcontrol=False)
     npt.assert_allclose(root, 1.0, atol=xtol)
+
+    # descending
+    root = noisyopt.bisect(lambda x: -x, -2, 2, xtol=xtol,
+                           errorcontrol=False)
+    npt.assert_allclose(root, 0.0, atol=xtol)
 
     ## extrapolate if 0 outside of interval
     root = noisyopt.bisect(lambda x: x, 1, 2, xtol=xtol,
@@ -201,6 +219,11 @@ def test_AveragedFunction():
 
     # test with floating point N
     noisyopt.AveragedFunction(func, N=30.0, paired=True)
+
+def test_DifferenceFunction():
+    difffunc = noisyopt.DifferenceFunction(lambda x: x+1, lambda x: x+2)
+    d, dse = difffunc(0)
+    assert d == -1.0
 
 def test_memoized():
     # memoize simple function
