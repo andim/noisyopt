@@ -14,11 +14,10 @@
 
 Python library for optimization of noisy functions.
 
-Currently variants of the following algorithms are implemented:
-- pattern search with adaptive sampling
+Currently the following algorithms are implemented:
+- robust pattern search with adaptive sampling
 - simultaneous perturbation stochastic approximation
-
-Optionally bound constraints on variables are possible.
+Both algorithms support bound constraints and do not require to explicitely calculate the gradient of the function.
 
 We do not attempt to find global optima -- look at [`scikit-optimize`](https://github.com/scikit-optimize/scikit-optimize) for Bayesian optimization algorithms aimed at finding global optima to noisy optimization problems.
 For optimizing functions that are not noisy take a look at [`scipy.optimize`](http://docs.scipy.org/doc/scipy/reference/optimize.html).
