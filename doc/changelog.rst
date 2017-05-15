@@ -1,6 +1,10 @@
 Release history
 ###############
 
+0.2.2
+=====
+* added PendingDeprecationWarning for minimize function
+
 0.2.1
 =====
 * setup.py installation requirements fixed
