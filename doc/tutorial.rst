@@ -62,6 +62,8 @@ optimum, ``res.fun``::
        nit: 9
    success: True
          x: array([ 0. ,  0.5])
+
+As instructed, the algorithm finds the correct solution respecting the bounds (the unconstrained optimum would be at [0, 0]).
   
 Further examples
 ----------------
