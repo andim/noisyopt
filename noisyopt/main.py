@@ -69,6 +69,10 @@ def minimizeCompass(func, x0, args=(),
     over the stochasticity in the function evaluation. The number of
     evaluations over which to average is adapted dynamically to ensure convergence.
 
+    The algorithm terminates when the current iterate is locally optimally
+    at the target pattern size deltatol or when the function value differs by
+    less than the tolerance feps along all directions. 
+
     Parameters
     ----------
     func: callable
@@ -88,7 +92,7 @@ def minimizeCompass(func, x0, args=(),
     deltainit: float
         initial pattern size
     deltatol: float
-        smallest pattern size,
+        target pattern size,
         function differences at this scale need to be larger than stochasticitiy
         in evaluations to ensure convergence if `errorcontrol=False`
     feps: float
