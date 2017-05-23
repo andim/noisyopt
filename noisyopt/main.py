@@ -64,11 +64,10 @@ def minimizeCompass(func, x0, args=(),
     """
     Minimization of an objective function by a pattern search.
 
-    The search algorithm is a simple compass search along coordinate directions.
-    If the function evaluation contains a stochastic element, then the function
-    is called repeatedly to average over the stochasticity in the function
-    evaluation. The number of evaluations is adapted dynamically to ensure
-    convergence.
+    The algorithm does a compass search along coordinate directions.
+    If `errorcontrol=True` then the function is called repeatedly to average
+    over the stochasticity in the function evaluation. The number of
+    evaluations over which to average is adapted dynamically to ensure convergence.
 
     Parameters
     ----------
@@ -87,9 +86,11 @@ def minimizeCompass(func, x0, args=(),
     redfactor: float
         reduction factor by which to reduce delta if no reduction direction found 
     deltainit: float
-        inital pattern size
+        initial pattern size
     deltatol: float
-        smallest pattern size
+        smallest pattern size,
+        function differences at this scale need to be larger than stochasticitiy
+        in evaluations to ensure convergence if `errorcontrol=False`
     feps: float
        smallest difference in function value to resolve 
     errorcontrol: boolean
