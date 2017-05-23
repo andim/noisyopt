@@ -19,6 +19,12 @@ def test_minimizeCompass():
     res = noisyopt.minimizeCompass(quadratic, np.asarray([0.5, 1.0]), deltatol=deltatol,
                             errorcontrol=False, callback=callback)
 
+    # test with scaling
+    res = noisyopt.minimizeCompass(quadratic, np.asarray([0.5, 1.0]), deltatol=deltatol,
+                            scaling=np.array([0.1, 1.0]),
+                            errorcontrol=False)
+    npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
+
     # test with output
     res = noisyopt.minimizeCompass(quadratic, np.asarray([0.5, 1.0]), deltatol=deltatol,
                             errorcontrol=False, disp=True)
@@ -222,6 +228,11 @@ def test_AveragedFunction():
 
 def test_DifferenceFunction():
     difffunc = noisyopt.DifferenceFunction(lambda x: x+1, lambda x: x+2)
+    d, dse = difffunc(0)
+    assert d == -1.0
+    d, dse = difffunc(1)
+    assert d == -1.0
+    # again with same value to test caching
     d, dse = difffunc(0)
     assert d == -1.0
 
