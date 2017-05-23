@@ -64,6 +64,19 @@ optimum, ``res.fun``::
          x: array([ 0. ,  0.5])
 
 As instructed, the algorithm finds the correct solution respecting the bounds (the unconstrained optimum would be at [0, 0]).
+
+Alternatively we can use the SPSA algorithm also included in the library to get an equivalent result (up to the finite accuracy of the optimization algorithm):: 
+
+  >>> from noisyopt import minimizeSPSA
+  >>> res = minimizeSPSA(obj, bounds=bounds, x0=x0, niter=1000, paired=False)
+  >>> print(res)
+       fun: 0.40851628698699205
+   message: 'terminated after reaching max number of iterations'
+      nfev: 2000
+       nit: 1000
+   success: True
+         x: array([ 0.0359265,  0.5      ])
+
   
 Further examples
 ----------------
