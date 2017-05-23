@@ -1,13 +1,14 @@
 [![License](https://img.shields.io/pypi/l/noisyopt.svg)](https://github.com/andim/noisyopt/blob/master/LICENSE)
 [![Latest release](https://img.shields.io/pypi/v/noisyopt.svg)](https://pypi.python.org/pypi/noisyopt)
-![Py2.7/3.x](https://img.shields.io/pypi/pyversions/noisyopt.svg)
-[![JOSS](http://joss.theoj.org/papers/4d17c8d6e2cfe6505ca5ccdace5e123b/status.svg)](http://joss.theoj.org/papers/4d17c8d6e2cfe6505ca5ccdace5e123b)
-[![DOI](https://zenodo.org/badge/54976198.svg)](https://zenodo.org/badge/latestdoi/54976198)
+[![Py2.7/3.x](https://img.shields.io/pypi/pyversions/noisyopt.svg)](https://pypi.python.org/pypi/noisyopt)
 
 ![Status](https://img.shields.io/pypi/status/noisyopt.svg)
 [![Build Status](https://travis-ci.org/andim/noisyopt.svg?branch=master)](https://travis-ci.org/andim/noisyopt)
 [![Documentation Status](https://readthedocs.org/projects/noisyopt/badge/?version=latest)](https://noisyopt.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/andim/noisyopt/badge.svg?branch=master)](https://coveralls.io/github/andim/noisyopt?branch=master)
+
+[![JOSS](http://joss.theoj.org/papers/4d17c8d6e2cfe6505ca5ccdace5e123b/status.svg)](http://joss.theoj.org/papers/4d17c8d6e2cfe6505ca5ccdace5e123b)
+[![DOI](https://zenodo.org/badge/54976198.svg)](https://zenodo.org/badge/latestdoi/54976198)
 
 
 # noisyopt
