@@ -51,8 +51,8 @@ You can access the documentation online at [Read the docs](http://noisyopt.readt
 
 ## Support and contributing
 
-For bug reports and enhancement requests use the [Github issue tool](http://github.com/andim/noisyopt/issues/new), or (even better!) open a [pull request](http://github.com/andim/noisyopt/pulls) with relevant changes. If you have any questions don't hesitate to contact me by email (andisspam@gmail.com) or Twitter ([@andisspam](http://twitter.com/andisspam)).
+For bug reports and enhancement requests use the [Github issue tool](http://github.com/andim/noisyopt/issues/new), or (even better!) open a [pull request](http://github.com/andim/noisyopt/pulls) with relevant changes. If you have any questions don't hesitate to contact me by email (andimscience@gmail.com) or Twitter ([@andimscience](http://twitter.com/andimscience)).
 
-You can run the testsuite using the py.test testing framework `py.test`.
+You can run the testsuite by running `pytest` in the top-level directory.
 
 You are cordially invited to [contribute](https://github.com/andim/noisyopt/blob/master/CONTRIBUTING.md) to the further development of noisyopt!

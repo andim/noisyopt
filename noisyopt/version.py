@@ -44,14 +44,14 @@ For more info see the `documentation <http://noisyopt.readthedocs.io/en/latest/>
 
 NAME = "noisyopt"
 MAINTAINER = "Andreas Mayer"
-MAINTAINER_EMAIL = "andisspam@gmail.com"
+MAINTAINER_EMAIL = "andimscience@gmail.com"
 DESCRIPTION = description
 LONG_DESCRIPTION = long_description
 URL = "http://noisyopt.readthedocs.io/"
 DOWNLOAD_URL = "http://github.com/andim/noisyopt"
 LICENSE = "MIT"
 AUTHOR = "Andreas Mayer"
-AUTHOR_EMAIL = "andisspam@gmail.com"
+AUTHOR_EMAIL = "andimscience@gmail.com"
 PLATFORMS = "OS Independent"
 MAJOR = _version_major
 MINOR = _version_minor
