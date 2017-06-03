@@ -11,9 +11,7 @@
 [![DOI](https://zenodo.org/badge/54976198.svg)](https://zenodo.org/badge/latestdoi/54976198)
 
 
-# noisyopt
-
-Python library for optimization of noisy functions.
+# Noisyopt: A python library for optimizing noisy functions
 
 Currently the following algorithms are implemented:
 - robust pattern search with adaptive sampling

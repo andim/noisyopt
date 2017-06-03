@@ -1,7 +1,7 @@
 .. noisyopt documentation master file
 
-Welcome to noisyopt's documentation!
-====================================
+Noisyopt: A Python library for optimizing noisy functions
+=========================================================
 
 `noisyopt`  is concerned with solving an (possibly bound-constrained) optimization problem of the kind
 
