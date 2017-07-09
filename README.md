@@ -16,6 +16,7 @@
 Currently the following algorithms are implemented:
 - robust pattern search with adaptive sampling
 - simultaneous perturbation stochastic approximation
+
 Both algorithms support bound constraints and do not require to explicitely calculate the gradient of the function.
 
 We do not attempt to find global optima -- look at [`scikit-optimize`](https://github.com/scikit-optimize/scikit-optimize) for Bayesian optimization algorithms aimed at finding global optima to noisy optimization problems.
