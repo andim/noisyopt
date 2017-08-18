@@ -1,9 +1,10 @@
-# This is a minimal usage example
+# This is a minimal usage example for the optimization routines
 # see also http://noisyopt.readthedocs.io/en/latest/tutorial.html
 
 import numpy as np
 from noisyopt import minimizeCompass, minimizeSPSA
 
+# definition of noisy function to be optimized
 def obj(x):
     return (x**2).sum() + 0.1*np.random.randn()
 
