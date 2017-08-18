@@ -592,13 +592,13 @@ def bisect(func, a, b, xtol=1e-6, errorcontrol=True,
     xtol: float
         target tolerance for interval size
     errorcontrol: boolean
-        if true, assume that function is instance of DifferenceFunction  
+        if true, assume that function is derived from `AverageBase`.
     testkwargs: only for `errorcontrol=True`
         see `AverageBase.test0`
     outside: ['extrapolate', 'raise']
         How to handle the case where f(a) and f(b) have same sign,
         i.e. where the root lies outside of the interval.
-        If 'raise' throws a BisectException in this case.
+        If 'raise' throws a `BisectException`.
     ascending: allow passing in directly whether function is ascending or not
         if ascending=True then it is assumed without check that f(a) < 0 and f(b) > 0
         if ascending=False then it is assumed without check that f(a) > 0 and f(b) < 0
