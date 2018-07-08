@@ -13,6 +13,8 @@
 
 # Noisyopt: A python library for optimizing noisy functions
 
+In some optimization problems a precise evaluation of the function to be optimized is either impossible or exceedingly computationally expensive. This package provides algorithms to optimize a function based on noisy evaluations.
+
 Currently the following algorithms are implemented:
 - robust pattern search with adaptive sampling
 - simultaneous perturbation stochastic approximation
