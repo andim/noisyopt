@@ -332,7 +332,9 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True,
         Deltak = np.random.choice([-1, 1], size=N)
         fkwargs = dict()
         if paired:
-            fkwargs['seed'] = np.random.randint(0, np.iinfo(np.uint32).max)
+            # upper bound needs to be set to signed 32-bit integer
+            # see https://github.com/numpy/numpy/issues/4085#issuecomment-29570567
+            fkwargs['seed'] = np.random.randint(0, np.iinfo(np.int32).max)
         if bounds is None:
             grad = (funcf(x + ck*Deltak, **fkwargs) - funcf(x - ck*Deltak, **fkwargs)) / (2*ck*Deltak)
             x -= ak*grad
