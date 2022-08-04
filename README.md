@@ -3,7 +3,7 @@
 [![Py2.7/3.x](https://img.shields.io/pypi/pyversions/noisyopt.svg)](https://pypi.python.org/pypi/noisyopt)
 
 ![Status](https://img.shields.io/pypi/status/noisyopt.svg)
-[![Build Status](https://travis-ci.org/andim/noisyopt.svg?branch=master)](https://travis-ci.org/andim/noisyopt)
+[![Build Status](https://app.travis-ci.com/andim/noisyopt.svg?branch=main)](https://travis-ci.org/andim/noisyopt)
 [![Documentation Status](https://readthedocs.org/projects/noisyopt/badge/?version=latest)](https://noisyopt.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/andim/noisyopt/badge.svg?branch=master)](https://coveralls.io/github/andim/noisyopt?branch=master)
 
