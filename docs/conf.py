@@ -25,12 +25,12 @@ import noisyopt
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '1.0' # numpydoc requires sphinc >= 1.0
+#needs_sphinx = '1.0' # numpydoc requires sphinc >= 1.0
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-sys.path.append(os.path.abspath('sphinxext'))
+#sys.path.append(os.path.abspath('sphinxext'))
 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.doctest',
@@ -39,7 +39,6 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
               'sphinx.ext.ifconfig',
               'sphinx.ext.autosummary',
-              'sphinx.ext.mathjax',
               'sphinx.ext.napoleon',
               ]
 
