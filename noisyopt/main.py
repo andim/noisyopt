@@ -305,7 +305,7 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True,
     gamma: float
         scaling exponent for evaluation step size 
     disp: boolean
-        If true, output status updates every 100th step during the optimization,
+        If true, output 100 status updates during the optimization,
         or every step if niter<100.
     callback: callable
         called after each iteration, as callback(xk), where xk are the current parameters
