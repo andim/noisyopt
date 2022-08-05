@@ -111,7 +111,7 @@ def minimizeCompass(func, x0, args=(),
         is acquired, which decreases the risk of taking a step in a non-descent
         direction at the expense of higher computational cost per iteration
     disp: boolean
-        whether to output status updates during the optimization
+        If true, output status updates during the optimization.
     callback: callable
         called after each iteration, as callback(xk), where xk is the current parameter vector.
 
@@ -305,7 +305,8 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True,
     gamma: float
         scaling exponent for evaluation step size 
     disp: boolean
-        whether to output status updates during the optimization
+        If true, output status updates every 100th step during the optimization,
+        or every step if niter<100.
     callback: callable
         called after each iteration, as callback(xk), where xk are the current parameters
 
@@ -344,8 +345,8 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True,
             xminus = project(x - ck*Deltak)
             grad = (funcf(xplus, **fkwargs) - funcf(xminus, **fkwargs)) / (xplus-xminus)
             x = project(x - ak*grad)
-        # print 100 status updates if disp=True
-        if disp and (k % (niter//100)) == 0:
+        # print status updates every 100th iteration if disp=True
+        if disp and (k % max([1, niter//100])) == 0:
             print(x)
         if callback is not None:
             callback(x)
