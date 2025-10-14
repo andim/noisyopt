@@ -43,6 +43,8 @@ x0 = np.array([-2.0, 2.0])
 res = minimizeCompass(obj, bounds=bounds, x0=x0, deltatol=0.1, paired=False)
 ```
 
+Note that in this example the bounds imply that the minimum will not be at (0,0) but rather at (0.5, 0). 
+
 ## Documentation
 
 You can access the documentation online at [Read the docs](http://noisyopt.readthedocs.io/en/latest/). If you install from source you can generate a local version by running `make html` from the `doc` directory.

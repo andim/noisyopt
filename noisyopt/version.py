@@ -3,7 +3,7 @@ from os.path import join as pjoin
 # Format expected by setup.py and doc/source/conf.py: string of form "X.Y.Z"
 _version_major = 0
 _version_minor = 2
-_version_micro = '2'  # use '' for first of series, number for 1 and above
+_version_micro = '3'  # use '' for first of series, number for 1 and above
 #_version_extra = 'dev'
 _version_extra = ''  # Uncomment this for full releases
 
@@ -43,7 +43,7 @@ For more info see the `documentation <http://noisyopt.readthedocs.io/en/latest/>
 """
 
 NAME = "noisyopt"
-MAINTAINER = "Andreas Mayer"
+MAINTAINER = "Andreas Tiffeau-Mayer"
 MAINTAINER_EMAIL = "andimscience@gmail.com"
 DESCRIPTION = description
 LONG_DESCRIPTION = long_description
