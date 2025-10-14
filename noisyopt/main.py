@@ -56,11 +56,23 @@ except:
                 return self.__class__.__name__ + "()"
 
 
-def minimizeCompass(func, x0, args=(),
-            bounds=None, scaling=None,
-            redfactor=2.0, deltainit=1.0, deltatol=1e-3, feps=1e-15,
-            errorcontrol=True, funcNinit=30, funcmultfactor=2.0,
-            paired=True, alpha=0.05, disp=False, callback=None, **kwargs):
+def minimizeCompass(func, x0,
+                    args=(),
+                    bounds=None,
+                    scaling=None,
+                    redfactor=2.0,
+                    deltainit=1.0,
+                    deltatol=1e-3,
+                    maxiter=None,
+                    feps=1e-15,
+                    errorcontrol=True,
+                    funcNinit=30,
+                    funcmultfactor=2.0,
+                    paired=True,
+                    alpha=0.05,
+                    disp=False,
+                    callback=None,
+                    **kwargs):
     """
     Minimization of an objective function by a pattern search.
 
@@ -95,6 +107,9 @@ def minimizeCompass(func, x0, args=(),
         target pattern size,
         function differences at this scale need to be larger than stochasticitiy
         in evaluations to ensure convergence if `errorcontrol=False`
+    maxiter : int
+        maximum number of iterations before stopping
+        `default=None` to iterate until convergence to deltatol
     feps: float
        smallest difference in function value to resolve 
     errorcontrol: boolean
@@ -178,8 +193,12 @@ def minimizeCompass(func, x0, args=(),
     # continue as long as delta is larger than tolerance
     # or if there was an update during the last iteration
     found = False
+    message = ''
     while delta >= deltatol-floatcompatol or found:
         nit += 1
+        if (not maxiter is None) and (nit > maxiter):
+            message = 'terminated after reaching max number of iterations'
+            break
         # if delta gets close to deltatol, do iteration with step size deltatol instead
         if delta/redfactor < deltatol:
             delta = deltatol
@@ -228,7 +247,9 @@ def minimizeCompass(func, x0, args=(),
         if not found:
             delta /= redfactor
 
-    message = 'convergence within deltatol'
+    if message == '':
+        message = 'convergence within deltatol'
+
     # check if any of the directions are free at the optimum
     delta = deltatol
     free = np.zeros(x.shape, dtype=bool)

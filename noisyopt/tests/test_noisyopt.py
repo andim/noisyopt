@@ -13,6 +13,11 @@ def test_minimizeCompass():
     npt.assert_allclose(res.x, [0.0, 0.0], atol=deltatol)
     npt.assert_equal(res.free, [False, False])
 
+    # test with maxiter
+    res = noisyopt.minimizeCompass(quadratic, np.asarray([4.5, 4.0]), deltatol=deltatol,
+                            errorcontrol=False, maxiter=2)
+    assert res.message.startswith('terminated after reaching max number of iterations')
+
     # test with callback
     def callback(x):
         assert len(x) == 2
