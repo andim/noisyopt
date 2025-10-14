@@ -356,7 +356,7 @@ def minimizeSPSA(func, x0, args=(), bounds=None, niter=100, paired=True,
         if paired:
             # upper bound needs to be set to signed 32-bit integer
             # see https://github.com/numpy/numpy/issues/4085#issuecomment-29570567
-            fkwargs['seed'] = np.random.randint(0, np.iinfo(np.int32).max)
+            fkwargs['seed'] = np.random.randint(0, np.iinfo(np.int32).max, dtype=np.int32)
         if bounds is None:
             grad = (funcf(x + ck*Deltak, **fkwargs) - funcf(x - ck*Deltak, **fkwargs)) / (2*ck*Deltak)
             x -= ak*grad
@@ -391,7 +391,7 @@ class AverageBase(object):
         self.paired = paired
         if self.paired:
             self.uint32max = np.iinfo(np.uint32).max 
-            self.seeds = list(np.random.randint(0, self.uint32max, size=int(N)))
+            self.seeds = list(np.random.randint(0, self.uint32max, size=int(N), dtype=np.uint32))
         # cache previous iterations
         self.cache = {}
         # number of evaluations
@@ -407,7 +407,7 @@ class AverageBase(object):
         N = int(value)
         if self.paired and (N > self._N):
             Nadd = N - self._N
-            self.seeds.extend(list(np.random.randint(0, self.uint32max, size=Nadd)))
+            self.seeds.extend(list(np.random.randint(0, self.uint32max, size=Nadd, dtype=np.uint32)))
         self._N = N
 
     def test0(self, x, type_='smaller', alpha=0.05, force=False, eps=1e-5, maxN=10000):
